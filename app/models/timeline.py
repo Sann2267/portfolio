@@ -6,7 +6,7 @@ import re
 
 from pydantic import Field, field_validator
 
-from app.models.common import ClaimBasis, ContentModel, coerce_date_string
+from app.models.common import CLAIM_BASIS_LABELS, ClaimBasis, ContentModel, coerce_date_string
 
 _EVENT_DATE = re.compile(r"^\d{4}(-\d{2}){0,2}$")
 
@@ -26,3 +26,7 @@ class TimelineEvent(ContentModel):
         if not _EVENT_DATE.match(value):
             raise ValueError("date must be YYYY, YYYY-MM, or YYYY-MM-DD")
         return value
+
+    @property
+    def basis_label(self) -> str:
+        return CLAIM_BASIS_LABELS[self.basis]

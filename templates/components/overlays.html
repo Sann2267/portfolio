@@ -1,0 +1,43 @@
+{# Modal (native <dialog>), drawer panel, and the command palette shell. #}
+
+{% macro modal(id, title) -%}
+<dialog class="modal" id="{{ id }}" aria-labelledby="{{ id }}-title">
+  <div class="modal__head">
+    <h2 id="{{ id }}-title">{{ title }}</h2>
+    <button class="btn btn--ghost btn--sm" type="button" data-modal-close="{{ id }}">
+      <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg><span class="sr-only">Close</span>
+    </button>
+  </div>
+  <div class="modal__body">{{ caller() }}</div>
+</dialog>
+{%- endmacro %}
+
+{% macro drawer(id, title, floating=False, hidden=True) -%}
+<aside class="drawer{% if floating %} drawer--floating{% endif %}" id="{{ id }}" aria-labelledby="{{ id }}-title"{% if hidden %} hidden{% endif %}>
+  <div class="drawer__head">
+    <h3 id="{{ id }}-title">{{ title }}</h3>
+    <button class="btn btn--ghost btn--sm" type="button" data-drawer-close="{{ id }}">
+      <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg><span class="sr-only">Close</span>
+    </button>
+  </div>
+  <div class="drawer__body">{{ caller() }}</div>
+</aside>
+{%- endmacro %}
+
+{# commands: list of dicts {label, href, kind}. The palette also searches live through `search_url`. #}
+{% macro command_palette(commands, search_url, id="palette") -%}
+<dialog class="palette" id="{{ id }}" aria-label="Command palette" data-palette data-search-url="{{ search_url }}">
+  <form method="get" action="{{ search_url }}" role="search">
+    <label class="sr-only" for="{{ id }}-input">Search cases, technologies, and pages</label>
+    <input class="palette__input" id="{{ id }}-input" name="q" type="search" placeholder="Search cases, technologies, pages…" autocomplete="off" data-palette-input>
+  </form>
+  <ul class="palette__list" role="listbox" data-palette-list>
+    {% for command in commands -%}
+    <li class="palette__item" role="option" data-command data-label="{{ command.label|lower }}">
+      <a href="{{ command.href }}"><span>{{ command.label }}</span><span class="palette__kind">{{ command.kind }}</span></a>
+    </li>
+    {% endfor -%}
+  </ul>
+  <div class="palette__hint"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span></div>
+</dialog>
+{%- endmacro %}

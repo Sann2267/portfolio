@@ -1,0 +1,24 @@
+{# Navigation. `links` is a list of dicts: {key, label, href}. `active` is the current key. #}
+{% macro nav(links, active, brand_href="/", brand="Case Room", handle=None, search_href="/search") -%}
+<header class="nav" data-nav>
+  <a class="nav__brand" href="{{ brand_href }}">
+    <svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>
+    <span>{{ brand }}</span>
+    {% if handle %}<span class="nav__handle mono">@{{ handle }}</span>{% endif %}
+  </a>
+  <button class="btn btn--ghost btn--sm nav__toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+    <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+    <span>Menu</span>
+  </button>
+  <nav id="site-nav" class="nav__links" aria-label="Primary">
+    {% for link in links -%}
+    <a href="{{ link.href }}"{% if link.key == active %} aria-current="page"{% endif %}>{{ link.label }}</a>
+    {% endfor -%}
+  </nav>
+  <a class="btn btn--ghost btn--sm nav__search" href="{{ search_href }}" data-palette-open>
+    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <span>Search</span>
+    <kbd aria-hidden="true">Ctrl K</kbd>
+  </a>
+</header>
+{%- endmacro %}

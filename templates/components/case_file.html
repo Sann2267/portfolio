@@ -1,0 +1,45 @@
+{# Case file card used on the investigation board and the case index. #}
+{% from "components/badges.html" import badge_list, status_indicator, evidence_tag %}
+
+{% macro case_card(project, href, category_label=None, tech_limit=4, compact=False, tech_href=None, animate=None) -%}
+<article class="case-card{% if compact %} case-card--compact{% endif %}{% if animate is not none %} reveal reveal--{{ animate }}{% endif %}"
+         data-slug="{{ project.slug }}"
+         data-category="{{ project.category }}"
+         data-tech="{{ (project.technologies + project.aws_services)|join('|') }}"
+         data-related="{{ project.related|join('|') }}">
+  <header class="case-card__head">
+    <span class="case-card__id mono">{{ project.case_label }}</span>
+    {{ status_indicator(project.status) }}
+  </header>
+  <p class="case-card__category eyebrow">{{ category_label or project.category }}</p>
+  <h3 class="case-card__title"><a href="{{ href }}">{{ project.title }}</a></h3>
+  <p class="case-card__summary">{{ project.summary }}</p>
+  {{ badge_list(project.technologies + project.aws_services, href_for=tech_href, aws_names=project.aws_services, limit=tech_limit) }}
+  <footer class="case-card__foot">
+    {% for kind in project.evidence_kinds -%}
+    {{ evidence_tag(kind) }}
+    {% endfor -%}
+  </footer>
+</article>
+{%- endmacro %}
+
+{% macro evidence_card(item, static_url=None) -%}
+<figure class="evidence-card" data-kind="{{ item.kind }}">
+  {% if item.src and static_url -%}
+  <div class="evidence-card__media">
+    <img src="{{ static_url(item.src) }}" alt="{{ item.alt }}" loading="lazy" decoding="async"
+         {% if item.width %}width="{{ item.width }}"{% endif %} {% if item.height %}height="{{ item.height }}"{% endif %}>
+  </div>
+  {% endif -%}
+  <figcaption>
+    <p class="evidence-card__title">
+      {% if item.href -%}
+      <a href="{{ item.href }}" rel="noopener noreferrer" target="_blank">{{ item.title }} <svg class="icon" aria-hidden="true"><use href="#i-external"/></svg></a>
+      {%- else -%}
+      {{ item.title }}
+      {%- endif %}
+    </p>
+    <p class="evidence-card__caption"><span class="eyebrow">{{ item.kind }}</span>{% if item.caption %} · {{ item.caption }}{% endif %}</p>
+  </figcaption>
+</figure>
+{%- endmacro %}

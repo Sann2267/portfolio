@@ -1,0 +1,11 @@
+{# Timeline node. `event` is a TimelineEvent; `case_title`/`case_href` when the event belongs to a case. #}
+{% from "components/badges.html" import claim_label %}
+
+{% macro timeline_node(event, case_title=None, case_href=None) -%}
+<li class="timeline__node{% if not event.project %} timeline__node--muted{% endif %}">
+  <span class="timeline__date">{{ event.date }}</span>
+  <h3 class="timeline__title">{{ event.title }} {{ claim_label(event) }}</h3>
+  {% if event.description %}<p class="timeline__meta">{{ event.description }}</p>{% endif %}
+  {% if case_title and case_href %}<p class="timeline__meta"><a href="{{ case_href }}">{{ case_title }}</a></p>{% endif %}
+</li>
+{%- endmacro %}

@@ -1,0 +1,43 @@
+{# Panels: terminal log, technical note, metric card, generic panel/section wrappers. #}
+
+{# lines: list of dicts {key, value, tone} where tone in (ok, active, warn, None) #}
+{% macro terminal_panel(lines, title="system", typing=False) -%}
+<section class="terminal" aria-label="{{ title }}">
+  <div class="terminal__bar">{{ title }}</div>
+  <pre class="terminal__body"><code>{% for line in lines -%}
+<span class="terminal__line"><span class="terminal__key">{{ line.key }}</span><span class="terminal__value{% if line.tone %} terminal__value--{{ line.tone }}{% endif %}{% if typing and loop.last %} cursor{% endif %}">{{ line.value }}</span></span>
+{% endfor -%}</code></pre>
+</section>
+{%- endmacro %}
+
+{% macro technical_note(title, body, tone=None) -%}
+<aside class="note{% if tone %} note--{{ tone }}{% endif %}">
+  <p class="note__title">{{ title }}</p>
+  {{ body }}
+</aside>
+{%- endmacro %}
+
+{% macro metric_card(label, value, note=None, tone=None) -%}
+<div class="metric{% if tone %} metric--{{ tone }}{% endif %}">
+  <span class="metric__label">{{ label }}</span>
+  <span class="metric__value">{{ value }}</span>
+  {% if note %}<span class="metric__note">{{ note }}</span>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro panel(title=None, elevated=False) -%}
+<div class="panel{% if elevated %} panel--elevated{% endif %}">
+  {% if title %}<p class="panel__title">{{ title }}</p>{% endif %}
+  {{ caller() }}
+</div>
+{%- endmacro %}
+
+{% macro section(id, title, index=None) -%}
+<section class="section" id="{{ id }}" aria-labelledby="{{ id }}-title">
+  <div class="section__head">
+    {% if index %}<span class="section__index">{{ index }}</span>{% endif %}
+    <h2 id="{{ id }}-title">{{ title }}</h2>
+  </div>
+  {{ caller() }}
+</section>
+{%- endmacro %}

@@ -1,0 +1,13 @@
+{# Repository / demo / documentation with availability state (SETTING.md). #}
+
+{% macro link_or_state(link, label) -%}
+<div class="link-state" data-status="{{ link.status }}">
+  <span class="link-state__label">{{ label }}</span>
+  {% if link.is_public -%}
+  <a class="link-state__value" href="{{ link.url }}" rel="noopener noreferrer" target="_blank">{{ link.label or link.url }} <svg class="icon" aria-hidden="true"><use href="#i-external"/></svg></a>
+  {%- else -%}
+  <span class="link-state__value link-state__value--unavailable">{{ link.state_label }}</span>
+  {%- endif %}
+  {% if link.note %}<span class="link-state__note">{{ link.note }}</span>{% endif %}
+</div>
+{%- endmacro %}

@@ -1,0 +1,51 @@
+{# Small labels: technology badges, evidence tags, status indicators, claim basis labels. #}
+
+{% macro tech_badge(name, href=None, aws=False, active=False) -%}
+{% if href -%}
+<a class="badge{% if aws %} badge--aws{% endif %}{% if active %} is-active{% endif %}" href="{{ href }}" data-tech="{{ name }}">{{ name }}</a>
+{%- else -%}
+<span class="badge{% if aws %} badge--aws{% endif %}{% if active %} is-active{% endif %}" data-tech="{{ name }}">{{ name }}</span>
+{%- endif %}
+{%- endmacro %}
+
+{% macro badge_list(names, href_for=None, aws_names=[], limit=None, active=None) -%}
+<ul class="badge-list">
+  {% for name in (names[:limit] if limit else names) -%}
+  <li>{{ tech_badge(name, href=href_for(name) if href_for else None, aws=(name in aws_names), active=(name == active)) }}</li>
+  {% endfor -%}
+  {% if limit and names|length > limit -%}
+  <li><span class="badge badge--dim">+{{ names|length - limit }}</span></li>
+  {% endif -%}
+</ul>
+{%- endmacro %}
+
+{% set EVIDENCE_LABELS = {
+  "architecture": "Architecture",
+  "screenshots": "Screenshots",
+  "documentation": "Documentation",
+  "technical_breakdown": "Technical breakdown",
+  "demo": "Live demo",
+  "code": "Source code",
+} %}
+
+{% macro evidence_tag(kind, available=True) -%}
+<span class="tag{% if available %} tag--available{% endif %}" data-evidence="{{ kind }}">{{ EVIDENCE_LABELS.get(kind, kind|replace("_", " ")) }}</span>
+{%- endmacro %}
+
+{% macro status_indicator(status, label=None) -%}
+<span class="status status--{{ status }}">{{ label or status }}</span>
+{%- endmacro %}
+
+{% macro claim_label(claim) -%}
+{% if claim.basis not in ("source", "code") -%}
+<span class="claim__basis claim__basis--{{ claim.basis }}"{% if claim.note %} title="{{ claim.note }}"{% endif %}>{{ claim.basis_label }}</span>
+{%- endif %}
+{%- endmacro %}
+
+{% macro claim_list(claims) -%}
+<ul class="claim-list">
+  {% for claim in claims -%}
+  <li>{{ claim.text }} {{ claim_label(claim) }}</li>
+  {% endfor -%}
+</ul>
+{%- endmacro %}
