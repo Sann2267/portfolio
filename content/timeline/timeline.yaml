@@ -1,0 +1,9 @@
+# Site-wide events. Case-specific events live in each project's timeline list and are merged
+# in by the loader with the case slug attached.
+events:
+  - date: 2026-07
+    title: LKS Nasional 2026 Cloud Computing modules
+    description: >-
+      Worked through the DevOps Automation, Cloud AI / Data Analytics, and Infrastructure
+      as a Service modules on AWS Academy Learner Lab.
+    basis: source

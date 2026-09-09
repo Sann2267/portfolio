@@ -1,0 +1,175 @@
+id: case-004
+case_number: 4
+slug: nusacommerce-analytics-platform
+title: NusaCommerce Analytics Platform
+aliases: [NusaCommerce Cloud AI / Data Analytics Platform, Cloud AI Data Analytics module]
+category: data
+domains: [data, cloud]
+project_type: End-to-end analytics platform on AWS
+status: completed
+role: >-
+  Cloud data engineer (module exercise). CloudFormation, Glue, Athena, Redshift, Step Functions,
+  EventBridge, API Gateway, WAF, EMR steps, monitoring. ETL scripts, PySpark jobs, Lambda
+  handlers, the state-machine template, and the dashboard were provided by the module.
+context: >-
+  LKS Nasional 2026 Cloud Computing, Cloud AI / Data Analytics module, on AWS Academy Learner
+  Lab. NusaCommerce is the fictional marketplace in the brief.
+period:
+  start: 2026-07
+  end: 2026-07
+  precision: month
+  source: Private practice repository created 2026-07-23.
+summary: >-
+  A five-layer data platform: CSV batches land in S3 and user events stream through Kinesis;
+  Glue, EMR, Step Functions, and EventBridge transform and orchestrate; Redshift, DynamoDB, and
+  S3 store history, real-time metrics, and the lake; Lambda behind API Gateway serves five
+  endpoints protected by WAF and API keys; a dashboard on Amplify shows GMV, sales, funnel, and
+  ML segments.
+technologies:
+  - Python
+  - SQL
+  - Apache Spark
+  - Apache Parquet
+  - ETL
+  - RFM segmentation
+  - CSV
+  - JSON
+  - REST API
+  - Bash
+aws_services:
+  - AWS CloudFormation
+  - Amazon S3
+  - Amazon Kinesis Data Streams
+  - Amazon Kinesis Data Firehose
+  - Amazon DynamoDB
+  - AWS Glue
+  - Amazon Athena
+  - AWS Lambda
+  - Amazon Redshift
+  - AWS Step Functions
+  - Amazon EventBridge
+  - Amazon SNS
+  - Amazon API Gateway
+  - Amazon CloudWatch
+  - Amazon EMR
+  - AWS Secrets Manager
+  - Amazon SQS
+  - AWS WAF
+  - AWS Amplify
+  - AWS IAM
+  - AWS Academy Learner Lab
+highlights:
+  - >-
+    Foundation in CloudFormation: three S3 buckets (versioned raw bucket with EventBridge
+    notifications, SSE-S3, Block Public Access, 30-day Glacier and 120-day expiry lifecycle), a
+    DynamoDB metrics table with composite key, 48-hour TTL, GSI and streams, a two-shard Kinesis
+    stream, and a Firehose delivery stream with dynamic date partitioning and Parquet conversion.
+  - >-
+    Batch path: Glue database, four catalog tables, two crawlers, three Glue 4.0 ETL jobs writing
+    partitioned Parquet, an Athena workgroup with a 1 GB scan cap and five named queries, and
+    Redshift staging, analytics, and reporting schemas with a materialized daily summary.
+  - >-
+    Streaming path: Kinesis records consumed in batches of 100 by a Lambda that aggregates hourly
+    GMV, order count, and active users into DynamoDB with atomic ADD operations.
+  - >-
+    Orchestration: a nine-state Step Functions machine (validate, parallel ETL, crawler, parallel
+    Redshift load and EMR steps, ML load, notify) triggered by an EventBridge rule with an input
+    transformer on S3 object creation. The provided definition contained five intentional bugs to
+    find and fix.
+  - >-
+    Serving and security: five REST endpoints behind API keys and a usage plan (100 RPS, burst
+    200, 1,000 requests per day), a WAF Web ACL with a rate-based rule returning a custom 429,
+    the SQLi managed rule group, dead-letter queues with CloudWatch alarms, and Redshift
+    credentials in Secrets Manager with a resource policy.
+  - >-
+    ML features on EMR 7.x: a seller composite score (GMV 40%, completion rate 30%, rating 20%,
+    growth 10%, min-max scaled, tiers TOP, GROWING, STABLE, AT_RISK) and RFM user segmentation
+    (z-score, NTILE quartiles, labels CHAMPION, LOYAL, AT_RISK, DORMANT), loaded into Redshift.
+challenges:
+  - The whole foundation had to be expressed as CloudFormation and updated in place as resources were added.
+  - The Firehose Parquet conversion references a Glue table that does not exist until later, so the template cannot enable it up front.
+  - The provided state-machine definition contained five bugs, some failing validation and some only at runtime.
+  - Public API endpoints needed protection without breaking the dashboard.
+solutions:
+  - Incremental stack updates on one template with PascalCase logical IDs and nusa- physical names.
+  - Format conversion enabled manually after the Glue catalog table was defined.
+  - Fixes located through the Step Functions console errors and execution history, then a manual test execution to SUCCEEDED.
+  - API keys with a usage plan as the baseline, WAF layered on the prod stage with rate limiting blocking and common rules in count mode.
+results:
+  - {text: "Three CloudFormation templates authored for the foundation and core stacks (S3, Kinesis, DynamoDB, SQS, WAF, Secrets Manager).", basis: code}
+  - {text: "The module defines verification queries and endpoint checks for every phase; execution evidence was not kept.", basis: not_documented}
+future_work: []
+evidence:
+  - {kind: architecture, title: "End-to-end architecture figure from the module", basis: source}
+  - {kind: code, title: "CloudFormation templates in the private practice repository", basis: code}
+  - {kind: document, title: "LKS Nasional 2026 Cloud AI / Data Analytics module (14 pages)", basis: source}
+repository:
+  status: private
+  note: >-
+    Practice repository with the CloudFormation templates. The ETL, Lambda, EMR, Step Functions,
+    and dashboard code were provided by the module.
+demo:
+  status: unavailable
+  note: The Learner Lab environment is torn down after the session.
+documentation:
+  status: private
+  note: Competition module; not redistributed.
+architecture:
+  groups:
+    - {id: ingestion, label: Ingestion}
+    - {id: processing, label: Processing}
+    - {id: storage, label: Storage}
+    - {id: serving, label: Serving}
+    - {id: security, label: Security}
+    - {id: monitoring, label: Monitoring}
+    - {id: frontend, label: Frontend}
+  nodes:
+    - {id: s3_raw, label: S3 raw bucket, service: Amazon S3, group: ingestion, description: "Versioned landing zone with EventBridge notifications; CSV datasets and scripts."}
+    - {id: kinesis, label: Kinesis stream, service: Amazon Kinesis Data Streams, group: ingestion, description: "nusa-events-stream, 2 shards, 24 h retention, SSE."}
+    - {id: firehose, label: Firehose delivery, service: Amazon Kinesis Data Firehose, group: ingestion, description: "5 MB / 60 s buffer, dynamic year/month/day prefix, Parquet conversion."}
+    - {id: eventbridge, label: EventBridge rule, service: Amazon EventBridge, group: processing, description: "Object Created on transactions/, shipments/, sellers/ with input transformer."}
+    - {id: stepfunctions, label: Step Functions orchestrator, service: AWS Step Functions, group: processing, description: "Nine states; validate, parallel ETL, crawler, parallel post-processing, ML load, notify; catch to NotifyFailure."}
+    - {id: glue, label: "Glue catalog, crawlers, ETL", service: AWS Glue, group: processing, description: "Three jobs (Glue 4.0, G.1X, 2 workers) writing partitioned Parquet. Scripts provided."}
+    - {id: emr, label: EMR cluster, service: Amazon EMR, group: processing, description: "EMR 7.x Spark, 1 master + 2 core m5.xlarge; seller scoring and RFM segmentation steps. PySpark jobs provided."}
+    - {id: stream_lambda, label: Stream processor, service: AWS Lambda, group: processing, description: "Batches of 100 Kinesis records aggregated hourly into DynamoDB. Handler provided."}
+    - {id: s3_lake, label: "S3 processed and curated", service: Amazon S3, group: storage, description: "Parquet ETL output; aggregates, reports, Athena results, ML features."}
+    - {id: dynamodb, label: DynamoDB realtime metrics, service: Amazon DynamoDB, group: storage, description: "METRIC#date#hour keys, 48 h TTL, MetricTypeIndex GSI, streams."}
+    - {id: redshift, label: Redshift warehouse, service: Amazon Redshift, group: storage, description: "staging, analytics, reporting schemas; mv_daily_summary; ML result tables."}
+    - {id: athena, label: Athena workgroup, service: Amazon Athena, group: storage, description: "1 GB scan cap; daily GMV, top sellers, category, province heatmap, funnel queries."}
+    - {id: api_lambda, label: API handler and loaders, service: AWS Lambda, group: serving, description: "api-handler routes by path; redshift-loader, view-refresher, validate-input, ml-loader. Handlers provided."}
+    - {id: apigw, label: REST API nusa-analytics-api, service: Amazon API Gateway, group: serving, description: "/health, /metrics/realtime, /analytics/sales, /analytics/funnel, /analytics/recommendations; API key and usage plan."}
+    - {id: waf, label: WAF Web ACL, service: AWS WAF, group: security, description: "Rate limit 100 per 5 min (custom 429), SQLi managed rules (block), common rules (count)."}
+    - {id: secrets, label: Secrets Manager, service: AWS Secrets Manager, group: security, description: "nusa/redshift/credentials with a LabRole-only resource policy."}
+    - {id: dlq, label: "SQS dead-letter queues", service: Amazon SQS, group: security, description: "For api-handler and stream-processor; alarms on visible messages."}
+    - {id: sns, label: SNS nusa-alerts, service: Amazon SNS, group: monitoring, description: "Pipeline success and failure notifications; DLQ alarm actions."}
+    - {id: cloudwatch, label: CloudWatch dashboard, service: Amazon CloudWatch, group: monitoring, description: "Lambda, Kinesis, Step Functions, DynamoDB, and Glue widgets."}
+    - {id: amplify, label: Amplify dashboard, service: AWS Amplify, group: frontend, description: "Static analytics dashboard configured with the API base URL and key. Page provided."}
+  edges:
+    - {source: kinesis, target: firehose}
+    - {source: firehose, target: s3_raw, label: user_events/}
+    - {source: kinesis, target: stream_lambda, label: batch 100}
+    - {source: stream_lambda, target: dynamodb, label: atomic ADD}
+    - {source: s3_raw, target: eventbridge, label: Object Created}
+    - {source: eventbridge, target: stepfunctions, label: start execution}
+    - {source: stepfunctions, target: glue, label: parallel ETL}
+    - {source: glue, target: s3_lake, label: Parquet}
+    - {source: stepfunctions, target: emr, label: steps}
+    - {source: emr, target: s3_lake, label: ml-features/}
+    - {source: stepfunctions, target: api_lambda, label: load and refresh}
+    - {source: api_lambda, target: redshift, label: COPY / REFRESH}
+    - {source: s3_lake, target: athena, label: catalog}
+    - {source: stepfunctions, target: sns, label: notify}
+    - {source: apigw, target: api_lambda}
+    - {source: api_lambda, target: dynamodb}
+    - {source: api_lambda, target: redshift}
+    - {source: api_lambda, target: athena}
+    - {source: api_lambda, target: secrets}
+    - {source: api_lambda, target: dlq, label: on failure}
+    - {source: waf, target: apigw, label: prod stage}
+    - {source: amplify, target: apigw, label: API key, protocol: HTTPS}
+    - {source: dlq, target: sns, label: alarm}
+    - {source: stepfunctions, target: cloudwatch, label: metrics}
+timeline:
+  - {date: 2026-07-23, title: "NusaCommerce practice repository with CloudFormation templates for the foundation and core stacks", basis: code}
+seo:
+  description: End-to-end AWS analytics platform with S3, Kinesis, Glue, EMR, Step Functions, Redshift, DynamoDB, API Gateway, WAF, and an Amplify dashboard.

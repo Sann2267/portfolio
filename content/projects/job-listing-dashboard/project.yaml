@@ -1,0 +1,128 @@
+id: case-002
+case_number: 2
+slug: job-listing-dashboard
+title: Job Listing Fullstack Dashboard + API
+aliases: [Loker Dashboard]
+category: fullstack
+domains: [fullstack, backend, data]
+project_type: Full-stack web application with a worker process
+status: active
+role: Sole developer. API, worker, data synchronisation, object store, AI layer, frontend.
+context: >-
+  Personal project built on the Indonesia Job Data Scraping System (case 001). The API runs on
+  Vercel, the worker on the machine that has the scraper.
+period:
+  start: 2026-09
+  precision: month
+  source: Repository created 2026-09-04.
+summary: >-
+  A FastAPI and React dashboard over the scraped job corpus. The API serves the corpus
+  read-only with a per-user layer for saved jobs, an admin operations page queues scraper runs
+  for a worker process that reports progress back through the database, and an optional AI
+  layer answers questions over the same filtered data.
+technologies:
+  - Python
+  - FastAPI
+  - SQLAlchemy
+  - PostgreSQL
+  - Neon
+  - SQLite
+  - psycopg
+  - PyJWT
+  - bcrypt
+  - uvicorn
+  - boto3
+  - httpx
+  - S3-compatible object storage
+  - REST API
+  - React
+  - Vite
+  - Recharts
+  - React Router
+  - JavaScript
+  - Node.js
+  - Vercel
+  - Groq API
+  - Anthropic API
+  - LLM tool calling
+  - pytest
+aws_services: []
+highlights:
+  - >-
+    The API never runs the scraper. Clicking "Run" writes a queued row; a worker on the machine
+    that has the tools claims it with a conditional UPDATE, runs the subprocess, and streams
+    state, log lines, and a heartbeat back into the same Postgres database.
+  - >-
+    The corpus stays read-only everywhere. Locally the API opens the scraper's SQLite with
+    mode=ro; the deployed API reads a Postgres copy that the worker refreshes after every scrape
+    with incremental upserts.
+  - >-
+    One filter definition is shared by the job list, statistics, and analytics endpoints, so
+    every chart describes exactly the rows on screen.
+  - >-
+    Post images are served through a cache proxy and an S3-compatible bucket with presigned
+    URLs, because Instagram CDN URLs expire within days.
+  - >-
+    AI features are a separate layer with a mock provider for tests and per-user daily caps.
+    Without a key the features report themselves as unconfigured and the rest of the app is
+    unaffected.
+challenges:
+  - Vercel functions are capped at 300 seconds, so scrapes, enrichment, and syncs cannot live in the API.
+  - A deployed API has no access to the scraper's SQLite file or its multi-gigabyte image cache.
+  - Neon's transaction pooler breaks psycopg's automatic prepared statements.
+  - The scraper may be writing to its database while the API reads it.
+solutions:
+  - Queue-and-worker split with conditional claims, a stop flag the worker polls, self-marking of aborted jobs on restart, and a scheduled-task supervisor that restarts the worker.
+  - A resumable migration script plus post-scrape sync to Postgres; the worker uploads images to the bucket and the API redirects to them.
+  - The engine disables prepared statements for any pooled connection URL.
+  - SQLite opened with mode=ro so the driver, not the code, refuses writes.
+results:
+  - {text: "Ten API areas (auth, jobs, stats, analytics, meta, runs, saved, ops, admin, ai) behind one FastAPI app with Swagger documentation.", basis: code}
+  - {text: "Tests run against the mock AI provider without any API key.", basis: code}
+  - {text: "Deployed as two Vercel projects (Python API and static frontend) with Neon Postgres.", basis: code}
+future_work: []
+evidence:
+  - {kind: document, title: "Repository README: architecture, operations, AI features, deployment", basis: code}
+  - {kind: document, title: "Backend README: databases, corpus sync, image proxy, endpoints", basis: code}
+repository:
+  status: private
+  note: Private repository under the author's GitHub account.
+demo:
+  status: unavailable
+  note: Deployed on Vercel behind a login; not publicly linked.
+documentation:
+  status: private
+  note: READMEs live in the private repository.
+architecture:
+  groups:
+    - {id: source, label: Data source}
+    - {id: api, label: API and storage}
+    - {id: worker, label: Worker machine}
+    - {id: client, label: Client}
+    - {id: ai, label: AI providers}
+  nodes:
+    - {id: scraper, label: Scraping pipeline (case 001), group: source, status: external, related_cases: [indonesia-job-scraping], description: "Writes the SQLite corpus and image cache on the worker machine."}
+    - {id: worker, label: Worker process, service: Python, group: worker, description: "Polls the queue, runs scraper, account search, clean, and autofill jobs as subprocesses, heartbeats every 10 s, syncs SQLite to Postgres."}
+    - {id: sqlite, label: SQLite corpus, service: SQLite, group: worker, description: "Opened read-only (mode=ro) by the API and the worker."}
+    - {id: bucket, label: Image bucket, service: S3-compatible object storage, group: worker, description: "Worker uploads cached flyer images; API redirects with presigned URLs."}
+    - {id: api, label: FastAPI on Vercel, service: FastAPI, group: api, description: "Auth, jobs, stats, analytics, saved jobs, operations queue, admin, AI endpoints."}
+    - {id: postgres, label: Neon Postgres, service: PostgreSQL, group: api, description: "Users, saved jobs, ops queue and logs, worker heartbeats, AI notes, and the synced corpus copy."}
+    - {id: frontend, label: React dashboard, service: React, group: client, description: "Vite + React 19 + Recharts; KPI overview, filterable list, job page, saved jobs, admin operations."}
+    - {id: user, label: User / admin, group: client, status: external}
+    - {id: llm, label: Groq / Anthropic, service: Groq API, group: ai, status: external, description: "Tool-calling agent over the same filter layer; mock provider in tests."}
+  edges:
+    - {source: user, target: frontend, label: browser}
+    - {source: frontend, target: api, label: JSON, protocol: HTTPS}
+    - {source: api, target: postgres, label: SQLAlchemy}
+    - {source: api, target: llm, label: chat / enrich, protocol: HTTPS}
+    - {source: worker, target: postgres, label: "claim jobs, logs, heartbeat", direction: both}
+    - {source: worker, target: scraper, label: subprocess}
+    - {source: scraper, target: sqlite}
+    - {source: sqlite, target: worker, label: sync to Postgres}
+    - {source: worker, target: bucket, label: upload images}
+    - {source: api, target: bucket, label: presigned redirect}
+timeline:
+  - {date: 2026-09-04, title: "Dashboard repository created; FastAPI API and React frontend", basis: source}
+  - {date: 2026-09-07, title: "Worker queue, Postgres corpus sync, and image object store in place", basis: source}
+seo:
+  description: FastAPI and React dashboard over an Instagram job-vacancy corpus with a queue-driven worker, Postgres sync, and an optional AI layer.

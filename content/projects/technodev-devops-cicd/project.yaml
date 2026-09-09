@@ -1,0 +1,165 @@
+id: case-003
+case_number: 3
+slug: technodev-devops-cicd
+title: TechnoDev DevOps CI/CD Platform
+aliases: [DevOps Automation module, LKS 2026 DevOps CI/CD]
+category: devops
+domains: [devops, cloud]
+project_type: CI/CD platform on AWS with self-hosted runners
+status: completed
+role: >-
+  DevOps engineer (module exercise). Network, runners, data services, container registry,
+  Lambda deployment, API Gateway, pipelines, observability. Application code, SQL schema,
+  frontend, and workflow definitions were provided by the module.
+context: >-
+  LKS Nasional 2026 Cloud Computing, DevOps Automation module, on AWS Academy Learner Lab.
+  TechnoDev is the fictional company in the brief.
+period:
+  start: 2026-07
+  end: 2026-07
+  precision: month
+  source: Public repository created 2026-07-27.
+summary: >-
+  A CI/CD platform for four containerised Lambda microservices, built inside a private VPC
+  because managed CI/CD services are unavailable in the lab. GitHub Actions run on self-hosted
+  EC2 runners in private subnets, images go to ECR, REST and WebSocket API Gateways expose the
+  functions, and CloudWatch, VPC Flow Logs, Secrets Manager, and Cognito cover observability and
+  security.
+technologies:
+  - GitHub Actions
+  - GitHub Actions self-hosted runners
+  - Docker
+  - Ubuntu
+  - Python
+  - PostgreSQL
+  - REST API
+  - WebSocket
+  - AWS CLI
+  - Git
+  - flake8
+  - wscat
+  - cURL
+  - Bash
+aws_services:
+  - Amazon VPC
+  - NAT Gateway
+  - Amazon EC2
+  - AWS Systems Manager Session Manager
+  - Amazon RDS
+  - Amazon SQS
+  - Amazon SNS
+  - Amazon ECR
+  - AWS Lambda
+  - Amazon API Gateway
+  - AWS Amplify
+  - AWS Secrets Manager
+  - Amazon CloudWatch
+  - VPC Flow Logs
+  - Amazon Cognito
+  - AWS IAM
+  - AWS Academy Learner Lab
+highlights:
+  - >-
+    Two self-hosted GitHub Actions runners on EC2 (Ubuntu 24.04, t3.medium) in private subnets
+    across two Availability Zones, administered only through Session Manager, with outbound
+    access through a NAT Gateway.
+  - >-
+    Four least-privilege security groups: runners self-referencing, Lambda outbound-only, RDS
+    on port 5432 only from the Lambda and runner groups, and a self-referencing default group.
+  - >-
+    Four containerised Lambda functions from ECR images (user-api, order-api, notif-worker,
+    websocket-api) attached to the private subnets; a REST API with greedy {proxy+} resources and
+    a WebSocket API with $connect, $disconnect, $default, and sendMessage routes.
+  - >-
+    Dead-letter queue created before the application queues; both queues redrive to it after
+    three failed receives; the notification worker consumes SQS with batch size 10.
+  - >-
+    Database credentials moved from Lambda environment variables to Secrets Manager and fetched
+    at runtime.
+  - >-
+    CI on pull requests (flake8, four Docker builds, handler import checks, frontend and schema
+    checks); CD on merge to main (ECR push, Lambda image update, Amplify deployment, API smoke
+    test).
+challenges:
+  - AWS CodePipeline and CodeBuild are unavailable in the Learner Lab.
+  - Runners without public IPs still need to reach GitHub, ECR, and package repositories.
+  - Failed messages must not be lost and the database must never be reachable from the internet.
+solutions:
+  - GitHub Actions with self-hosted runners registered from inside the VPC.
+  - Private subnets with a NAT Gateway for egress and Session Manager for administration.
+  - SQS dead-letter queue with 14-day retention and redrive policies; RDS Multi-AZ, encrypted, private, in a subnet group spanning both private subnets.
+results:
+  - {text: "Runner verification, CI, and CD workflows are committed to the public repository and target the self-hosted runners.", basis: code}
+  - {text: "The module defines an end-to-end CRUD test and a WebSocket broadcast test as the acceptance criteria; execution logs were not kept.", basis: not_documented}
+future_work: []
+evidence:
+  - {kind: architecture, title: "End-to-end architecture figure from the module", basis: source}
+  - {kind: code, title: "GitHub Actions workflows: test-runner.yaml, ci.yaml, deploy.yaml", href: "https://github.com/Sann2267/devops-learner-lab/tree/main/.github/workflows", basis: code}
+  - {kind: document, title: "LKS Nasional 2026 DevOps Automation module (18 pages)", basis: source}
+repository:
+  status: public
+  url: https://github.com/Sann2267/devops-learner-lab
+  label: devops-learner-lab (workflows only)
+  note: >-
+    Holds the three GitHub Actions workflows. The Lambda code, frontend, and SQL schema were
+    provided by the module and are not in the repository.
+demo:
+  status: unavailable
+  note: The Learner Lab environment is torn down after the session.
+documentation:
+  status: private
+  note: Competition module; not redistributed.
+architecture:
+  groups:
+    - {id: source, label: Source and CI/CD}
+    - {id: network, label: "VPC devops-vpc (us-west-2)"}
+    - {id: compute, label: Compute}
+    - {id: api, label: API layer}
+    - {id: data, label: Data and messaging}
+    - {id: frontend, label: Frontend and auth}
+    - {id: ops, label: Security and observability}
+  nodes:
+    - {id: developer, label: Developer, group: source, status: external}
+    - {id: github, label: GitHub repository, service: GitHub, group: source, description: "devops-learner-lab with branch protection requiring one review."}
+    - {id: actions, label: GitHub Actions, service: GitHub Actions, group: source, description: "ci.yaml on pull requests, deploy.yaml on merge to main. Workflow definitions provided by the module."}
+    - {id: runners, label: "Self-hosted runners (2x EC2)", service: Amazon EC2, group: network, description: "Ubuntu 24.04 t3.medium in private subnets 210.0.10.0/24 and 210.0.11.0/24; Docker, AWS CLI, Git; reached through Session Manager."}
+    - {id: nat, label: NAT Gateway, service: NAT Gateway, group: network, description: "Egress for private subnets; Internet Gateway for public subnets."}
+    - {id: ecr, label: "ECR (4 repositories)", service: Amazon ECR, group: compute, description: "Mutable tags, scan on push."}
+    - {id: lambda, label: "Lambda (4 container functions)", service: AWS Lambda, group: compute, description: "user-api, order-api, notif-worker, websocket-api; Python 3.11 base image; VPC-attached. Function code provided by the module."}
+    - {id: rest, label: REST API devops-api, service: Amazon API Gateway, group: api, description: "/users, /orders, /products with {proxy+}; Lambda proxy integration; stage prod."}
+    - {id: ws, label: WebSocket API devops-ws-api, service: Amazon API Gateway, group: api, description: "$connect, $disconnect, $default, sendMessage; ping, get_orders, order_status_update, send_notification actions."}
+    - {id: rds, label: RDS PostgreSQL 15, service: Amazon RDS, group: data, description: "db.t3.small, Multi-AZ, encrypted, 7-day backups, private subnet group."}
+    - {id: sqs, label: "SQS queues + DLQ", service: Amazon SQS, group: data, description: "orders and notifications queues redrive to devops-dlq after 3 receives."}
+    - {id: sns, label: "SNS topics", service: Amazon SNS, group: data, description: "devops-notifications and devops-alerts with e-mail subscriptions."}
+    - {id: amplify, label: Amplify frontend, service: AWS Amplify, group: frontend, description: "Manual deployment of the provided SPA."}
+    - {id: cognito, label: Cognito user pool, service: Amazon Cognito, group: frontend, description: "Hosted UI, SPA client, JWT authorizer on the REST API."}
+    - {id: secrets, label: Secrets Manager, service: AWS Secrets Manager, group: ops, description: "devops/rds-credentials fetched at runtime by all four functions."}
+    - {id: cloudwatch, label: CloudWatch dashboard, service: Amazon CloudWatch, group: ops, description: "Lambda invocations, errors, p50/p99 duration; RDS CPU and connections; SQS queue depth."}
+    - {id: flowlogs, label: VPC Flow Logs, service: VPC Flow Logs, group: ops, description: "ALL traffic to CloudWatch Logs."}
+  edges:
+    - {source: developer, target: github, label: pull request}
+    - {source: github, target: actions, label: triggers}
+    - {source: actions, target: runners, label: jobs}
+    - {source: runners, target: nat, label: egress}
+    - {source: runners, target: ecr, label: docker push}
+    - {source: runners, target: lambda, label: update-function-code}
+    - {source: runners, target: amplify, label: create-deployment}
+    - {source: ecr, target: lambda, label: image}
+    - {source: rest, target: lambda, label: AWS_PROXY}
+    - {source: ws, target: lambda, label: routes}
+    - {source: lambda, target: rds, label: "port 5432", protocol: PostgreSQL}
+    - {source: lambda, target: sqs, label: send / consume}
+    - {source: sqs, target: lambda, label: event source mapping}
+    - {source: lambda, target: sns, label: publish}
+    - {source: lambda, target: secrets, label: get_secret_value}
+    - {source: amplify, target: rest, label: REST}
+    - {source: amplify, target: ws, label: WebSocket}
+    - {source: cognito, target: rest, label: authorizer}
+    - {source: lambda, target: cloudwatch, label: metrics}
+    - {source: rds, target: cloudwatch, label: metrics}
+    - {source: sqs, target: cloudwatch, label: metrics}
+    - {source: nat, target: flowlogs, label: flow records}
+timeline:
+  - {date: 2026-07-27, title: "devops-learner-lab repository with runner verification, CI, and CD workflows", basis: code}
+seo:
+  description: CI/CD platform on AWS with self-hosted GitHub Actions runners in a private VPC, containerised Lambda services, REST and WebSocket APIs.

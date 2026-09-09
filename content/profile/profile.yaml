@@ -1,0 +1,31 @@
+name: Ibnu Adzim
+handle: Sann2267
+headline: Cloud infrastructure, DevOps automation, backend and data systems, IoT
+focus:
+  - Cloud infrastructure on AWS
+  - DevOps and CI/CD automation
+  - Backend and data pipelines in Python
+  - IoT telemetry and dashboards
+location: Indonesia
+languages: [Indonesian, English]
+specializations:
+  - category: cloud
+    label: Cloud
+    description: VPC design, serverless and container platforms, IaC with CloudFormation and Terraform
+  - category: devops
+    label: DevOps
+    description: GitHub Actions on self-hosted runners, container builds, blue/green delivery
+  - category: backend
+    label: Backend
+    description: FastAPI and Flask services, job queues, authentication, API design
+  - category: data
+    label: Data
+    description: Scraping and OCR pipelines, ETL on Glue and EMR, analytics APIs
+  - category: iot
+    label: IoT
+    description: ESP32 sensors publishing over MQTT to AWS IoT Core, Node-RED dashboards
+contacts:
+  - {kind: email, label: Email, value: ibnuadzim2@gmail.com, url: "mailto:ibnuadzim2@gmail.com", primary: true}
+  - {kind: github, label: GitHub, value: Sann2267, url: "https://github.com/Sann2267"}
+  # Add more channels when you want them public, for example:
+  # - {kind: linkedin, label: LinkedIn, url: "https://www.linkedin.com/in/<handle>"}

@@ -1,0 +1,65 @@
+# Skills are evidence-based: the registry lists the cases each skill appears in by matching
+# the technology names below. No self-rated levels.
+groups:
+  - id: cloud
+    label: Cloud infrastructure
+    category: cloud
+    skills:
+      - name: Network design on AWS
+        technologies: [Amazon VPC, VPC Peering, AWS Transit Gateway, NAT Gateway, Application Load Balancer]
+      - name: Serverless and container compute
+        technologies: [AWS Lambda, Amazon ECR, Amazon EKS, Amazon ECS, Amazon EC2]
+      - name: Managed data services
+        technologies: [Amazon RDS, Amazon Aurora, Amazon DynamoDB, Amazon Redshift, Amazon ElastiCache, Amazon S3]
+      - name: Infrastructure as code
+        technologies: [AWS CloudFormation, Terraform]
+      - name: Security services
+        technologies: [AWS Secrets Manager, AWS WAF, Amazon Cognito, AWS IAM]
+      - name: Observability
+        technologies: [Amazon CloudWatch, VPC Flow Logs, Grafana]
+  - id: devops
+    label: DevOps and delivery
+    category: devops
+    skills:
+      - name: CI/CD pipelines
+        technologies: [GitHub Actions, GitHub Actions self-hosted runners]
+      - name: Containers and orchestration
+        technologies: [Docker, Kubernetes, Helm, kubectl]
+      - name: Progressive delivery
+        technologies: [AWS CodeDeploy]
+      - name: Disaster recovery
+        technologies: [Aurora Global Database, S3 Cross-Region Replication]
+  - id: backend
+    label: Backend engineering
+    category: backend
+    skills:
+      - name: Python web services
+        technologies: [Python, FastAPI, Flask, uvicorn]
+      - name: Data access and auth
+        technologies: [SQLAlchemy, PostgreSQL, SQLite, PyJWT, bcrypt]
+      - name: Integration and messaging
+        technologies: [REST API, WebSocket, Amazon SQS, Amazon SNS, Amazon EventBridge]
+      - name: Testing
+        technologies: [pytest]
+  - id: data
+    label: Data engineering
+    category: data
+    skills:
+      - name: Collection and extraction
+        technologies: [Web scraping, OCR, RapidOCR, curl_cffi, Regular expressions]
+      - name: ETL and analytics
+        technologies: [AWS Glue, Amazon Athena, Amazon EMR, Apache Spark, Apache Parquet, AWS Step Functions]
+      - name: Schemas and validation
+        technologies: [pydantic, JSON, CSV]
+      - name: LLM-assisted processing
+        technologies: [Groq API, Anthropic API, LLM tool calling]
+  - id: iot
+    label: IoT
+    category: iot
+    skills:
+      - name: Embedded telemetry
+        technologies: [ESP32, DHT22, C++ (Arduino), Arduino IDE]
+      - name: Device connectivity
+        technologies: [MQTT, AWS IoT Core, X.509 certificates, TLS]
+      - name: Dashboards
+        technologies: [Node-RED, Node-RED Dashboard]

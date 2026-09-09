@@ -1,0 +1,108 @@
+id: case-006
+case_number: 6
+slug: esp32-aws-iot-monitoring
+title: ESP32 + AWS IoT Monitoring
+aliases: [Smart IoT Environment Monitoring, Sistem IoT Cerdas, Monitoring Suhu dan Kelembapan]
+category: iot
+domains: [iot, cloud]
+project_type: Real-time environment telemetry with a cloud dashboard
+status: completed
+role: >-
+  IoT developer in a project team. Sensor wiring, ESP32 firmware, AWS IoT Core thing,
+  certificate and policy setup, Node-RED flow and dashboard. The presentation is credited to
+  "Tim Proyek IoT".
+context: >-
+  Team project presented to teachers and documented in a 13-slide deck. The firmware and cloud
+  configuration were implemented but never published.
+period:
+  start: 2026-05
+  end: 2026-06
+  precision: month
+  source: Related repositories were created in May and June 2026; the presentation is undated.
+summary: >-
+  An ESP32 reads temperature and humidity from a DHT22 and publishes JSON over MQTT to AWS IoT
+  Core, authenticated with an X.509 device certificate over TLS. Node-RED subscribes to the
+  topic, applies the data logic, and renders gauges, a 24-hour trend, and threshold alerts on a
+  dashboard that is reachable from anywhere.
+technologies:
+  - ESP32
+  - DHT22
+  - Wi-Fi
+  - C++ (Arduino)
+  - Arduino IDE
+  - MQTT
+  - X.509 certificates
+  - TLS
+  - Node-RED
+  - Node-RED Dashboard
+  - JSON
+aws_services:
+  - AWS IoT Core
+  - AWS IAM
+highlights:
+  - Data flow sensor, ESP32, Wi-Fi, AWS IoT Core, Node-RED, dashboard, with JSON payloads over MQTT.
+  - Device authentication with an X.509 certificate and TLS between the ESP32 and AWS IoT Core; an AWS IoT policy restricts the device to its own topics; MQTT QoS covers delivery reliability.
+  - Dashboard with gauges for instant readings, a 24-hour trend chart, and colour alerts when the temperature passes a threshold such as 30 °C.
+  - >-
+    Motivation from the deck: energy efficiency through automatic cooling decisions, protecting
+    computer labs and servers from overheating, cloud access without geographic limits, and
+    real-time analysis.
+challenges:
+  - A microcontroller on a school network has to authenticate to a cloud broker without shipping shared passwords.
+  - Readings must reach a browser dashboard in real time from anywhere, not only on the local network.
+solutions:
+  - Per-device X.509 certificate and private key on the ESP32, TLS to the IoT Core endpoint, and a scoped IoT policy.
+  - Node-RED subscribed to the IoT Core topic feeds gauges, charts, and alert nodes on the dashboard.
+results:
+  - text: The presentation reports stable monitoring with a transmission delay under one second on AWS infrastructure.
+    basis: source
+    note: Reported in the project deck; no measurement log was kept.
+  - text: Firmware, the IoT Core thing, certificate, and policy, and the Node-RED flow were implemented but not documented beyond the deck.
+    basis: user_statement
+future_work:
+  - {text: "Telegram bot notifications to phones.", basis: planned}
+  - {text: "Historical storage in InfluxDB for yearly audits.", basis: planned}
+  - {text: "Automatic air-conditioning control through a relay.", basis: planned}
+evidence:
+  - {kind: document, title: "Project presentation: Sistem IoT Cerdas (13 slides, Indonesian)", basis: source}
+  - {kind: note, title: "The dashboard image in the deck is the Node-RED reference dashboard, not a screenshot of this system", basis: source}
+repository:
+  status: unavailable
+  note: The original firmware and Node-RED flow were not published.
+  # A public repository with a similar name under the same account is an AI-generated
+  # reconstruction (Mosquitto on EC2). It is not the documented implementation and is not linked.
+demo:
+  status: unavailable
+  note: The dashboard ran on a private Node-RED instance.
+documentation:
+  status: private
+  note: Presentation deck available on request.
+architecture:
+  groups:
+    - {id: device, label: Device}
+    - {id: cloud, label: AWS}
+    - {id: processing, label: Processing and UI}
+    - {id: future, label: Planned extensions}
+  nodes:
+    - {id: dht22, label: DHT22 sensor, service: DHT22, group: device, description: "Temperature -40 to 80 °C (±0.5 °C), humidity 0 to 100% RH (±2% RH)."}
+    - {id: esp32, label: ESP32, service: ESP32, group: device, description: "Dual-core 240 MHz, integrated Wi-Fi, TLS support; reads the sensor and publishes JSON."}
+    - {id: iot_core, label: AWS IoT Core, service: AWS IoT Core, group: cloud, description: "Managed MQTT broker; device authenticated with an X.509 certificate."}
+    - {id: iot_policy, label: AWS IoT policy, service: AWS IAM, group: cloud, description: "Restricts the device to connect, publish, and subscribe on specific topics."}
+    - {id: nodered, label: Node-RED, service: Node-RED, group: processing, description: "Subscribes to the topic, applies data logic, drives the dashboard."}
+    - {id: dashboard, label: Node-RED Dashboard, service: Node-RED Dashboard, group: processing, description: "Gauges, 24-hour trend chart, colour alerts above the threshold."}
+    - {id: telegram, label: Telegram bot alerts, service: Telegram Bot API, group: future, status: planned}
+    - {id: influx, label: InfluxDB history, service: InfluxDB, group: future, status: planned}
+    - {id: relay, label: Relay for AC control, service: Relay module, group: future, status: planned}
+  edges:
+    - {source: dht22, target: esp32, label: digital read}
+    - {source: esp32, target: iot_core, label: MQTT publish, protocol: "MQTT over TLS, X.509"}
+    - {source: iot_policy, target: iot_core, label: authorises, direction: none}
+    - {source: iot_core, target: nodered, label: MQTT subscribe, protocol: MQTT}
+    - {source: nodered, target: dashboard, label: "gauges, charts, alerts"}
+    - {source: nodered, target: telegram, label: planned}
+    - {source: nodered, target: influx, label: planned}
+    - {source: nodered, target: relay, label: planned}
+timeline:
+  - {date: 2026-05, title: "ESP32 and DHT22 monitor publishing to AWS IoT Core with a Node-RED dashboard", basis: user_statement}
+seo:
+  description: ESP32 and DHT22 telemetry over MQTT with X.509 authentication to AWS IoT Core, visualised in a Node-RED dashboard.

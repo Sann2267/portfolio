@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| Phase | 01 — Audit and Architecture |
-| Status | Complete. Implementation begins in Phase 02 (content model). |
+| Phase | 02 — Content model complete (Phase 01 audit and architecture retained below) |
+| Status | Content layer implemented in `app/models` and `app/content`; see `docs/CONTENT_GUIDE.md`. Design system begins in Phase 03. |
 | Audit date | 2026-09-09 |
 | Owner | Ibnu Adzim (GitHub `Sann2267`) |
 | Governing specs | `00_MASTER_BUILD.md` … `10_VERIFICATION_AND_RELEASE.md`, `SETTING.md` |
@@ -75,15 +75,14 @@ implementations, never as client or production work.
 | 003 TechnoDev DevOps CI/CD Platform | — | `devops-learner-lab` | public | GitHub Actions only: CI (flake8 + Docker builds of four Lambda images on PR), CD (ECR push, Lambda image update, Amplify deploy, API Gateway smoke test), runner verification. All jobs `runs-on: self-hosted`. Application trees referenced by the workflows are not in the repo. | `public` (partial) |
 | 004 NusaCommerce Analytics Platform | — | `nusacommerce` | private | CloudFormation stacks, Lambdas, Glue ETL, EMR PySpark, Step Functions ASL, Redshift Spectrum SQL, WAF reference, Amplify dashboard. The README states the application code was provided as competition assets; the author's work is the infrastructure. | `private` |
 | 005 Multi-Tenant SaaS Infrastructure | — | none found | — | PDF only | `unavailable` |
-| 006 ESP32 + AWS IoT Monitoring | — | `monitoring-suhu-dan-kelembapan` | public | ESP32 firmware (DHT22 → Wi-Fi → MQTT publish every 5 s), Mosquitto config, Node-RED flow, setup docs, architecture image. A private variant (`nodered-docker`) adds docker-compose with Node-RED, a Node.js API, a Python logger, RDS MySQL and Redis. | `public` |
+| 006 ESP32 + AWS IoT Monitoring | — | none linked | — | The presentation deck (13 slides) documents the design: DHT22 → ESP32 → Wi-Fi → AWS IoT Core (X.509, TLS, IoT policy, MQTT QoS) → Node-RED dashboard. The author states the firmware, IoT Core setup, and flow were implemented but never published. A public repository under a similar name is an AI-generated reconstruction using Mosquitto on EC2; it is not the documented implementation and is not linked. | `unavailable` |
 
 Two consequences for later phases:
 
 - The React frontend of case 002 is the *subject* of that case. The portfolio itself is Flask/Jinja.
-- The implemented IoT firmware speaks plain MQTT (port 1883) to a Mosquitto broker on EC2. It does not
-  use AWS IoT Core, X.509 certificates, or TLS. The phase 02 outline describes an IoT Core + X.509 + TLS
-  chain; that chain must be confirmed from the PDF and, unless the PDF shows it implemented, be labeled
-  as design or planned while the EC2 + Mosquitto path is labeled implemented.
+- Case 006 rests on the deck plus the author's statement. Claims that only the author can vouch for
+  carry `basis: user_statement` ("Implemented in project environment"); the deck's sub-second delay
+  figure is quoted as reported, not measured; the three extensions in the deck are `planned`.
 
 ### Content conventions already defined by the specs
 
@@ -160,7 +159,14 @@ Two consequences for later phases:
 | Lint/format | ruff | One tool for both. |
 | Not used | SQLAlchemy, WTForms, any database, any frontend framework, Node build tooling | No persistent data; contact page is links, not a form. |
 
-### Domain model (sketch, finalized in Phase 02)
+### Domain model
+
+Implemented in Phase 02 under `app/models/` and documented field by field in
+`docs/CONTENT_GUIDE.md`. Two additions over the original sketch: every statement about a case is a
+`Claim` with a `basis` (source, code, user_statement, target, planned, not_documented) that the UI
+renders as a label, and architecture nodes carry a `status` (implemented, planned, provided, external,
+not_documented) so components supplied by a competition module are marked as such. The original
+sketch is kept below for reference.
 
 ```python
 LinkStatus = Literal["public", "private", "archived", "deleted", "unavailable"]
@@ -634,18 +640,27 @@ with a copy-paste template for a new case.
 | 2026-09-09 | Public repository `Sann2267/portfolio`; old `Sann2267/portofolio` archived | User decision |
 | 2026-09-09 | Source PDFs kept out of git under `docs/sources/` | Competition material is not for publication |
 | 2026-09-09 | Node.js allowed as optional dev tooling only | User permission; Python-only baseline preserved |
-| 2026-09-09 | IoT case sourced from the public `monitoring-suhu-dan-kelembapan` repository plus the PDF | User instruction |
+| 2026-09-09 | IoT case sourced from the presentation deck plus the author's statement; the similarly named public repository is an AI-generated reconstruction and is not linked | User clarification |
+| 2026-09-09 | Claims carry a `basis`; `future_work` must be `planned`; competition-provided components are described as provided | Honesty rules from the master build |
+| 2026-09-09 | `case.md` is split on `## ` headings into a fixed set of sections; unknown headings are errors | Keeps the single case renderer deterministic |
+| 2026-09-09 | Skills list taxonomy names only; cases per skill are derived by the registry and a skill without a case fails the tests | Evidence-based skills page, no self-rated levels |
+| 2026-09-09 | Cases 003 and 004 credit infrastructure and orchestration work; workflow definitions, Lambda code, ETL scripts, and dashboards were provided by the modules | Module text states the assets were provided |
 
 ---
 
-## Next phase handoff (Phase 02 prerequisites)
+## Phase status and handoff
 
-1. Write the extraction helper in the scratchpad, not the repo: per-page text via pdfplumber and PNG
-   rasterization of image-only pages (IoT: all; DevOps: 1, 6, 18; Cloud AI: 1, 14; IaaS: 7).
-2. Freeze the `project.yaml` schema from the union of fields in `00`, `02`, `06`, `07`, and `SETTING.md`,
-   then write `docs/CONTENT_GUIDE.md`.
-3. Read the READMEs of `loker-search` and `dashboard` for cases 001 and 002; read the GitHub sources for
-   cases 003, 004, and 006 through `gh api` without cloning.
-4. Resolve the IoT implemented-vs-designed question from the PDF before writing the case 006 diagram.
-5. Ask the user for screenshots and evidence assets per case; until then evidence lists documentation
-   and architecture only.
+Phase 02 (content model) delivered `app/models`, `app/content` (loader, registry, Markdown, CLI
+validator), `content/` for all six cases plus profile, skills, timeline, and taxonomy, the test suite
+under `tests/`, and `docs/CONTENT_GUIDE.md`. All PDF and repository sources were read; the schema was
+frozen from the union of `00`, `02`, `06`, `07`, and `SETTING.md`.
+
+Open items carried into later phases:
+
+1. No screenshot or image evidence exists yet. Evidence lists documentation, architecture, and
+   technical breakdown only; `static/images/projects/<slug>/` is empty until the user supplies assets.
+2. The deck's dashboard image for case 006 is a stock Node-RED image and must not be used as a
+   screenshot.
+3. Phase 03 defines the visual tokens; Phase 04 wires `load_registry` into the Flask factory with the
+   dev-mode reload described under Content flow; Phase 07 implements the layout for the
+   `architecture` data already present in every case.

@@ -1,0 +1,180 @@
+# Controlled vocabulary for the whole site.
+# - categories: case categories and filter values
+# - groups: how technologies are grouped in badges and the skills page
+# - technologies: every name a project may use; aliases map to the canonical name
+
+categories:
+  - id: cloud
+    label: Cloud
+    description: AWS infrastructure, networking, and managed services
+  - id: devops
+    label: DevOps
+    description: CI/CD, automation, containers, and delivery pipelines
+  - id: backend
+    label: Backend
+    description: APIs, services, workers, and data access
+  - id: data
+    label: Data
+    description: Scraping, ETL, analytics, and data platforms
+  - id: iot
+    label: IoT
+    description: Sensors, microcontrollers, MQTT, and device dashboards
+  - id: fullstack
+    label: Fullstack
+    description: Backend plus a user-facing frontend
+
+groups:
+  - {id: language, label: Languages}
+  - {id: framework, label: Frameworks and libraries}
+  - {id: aws, label: AWS services}
+  - {id: infrastructure, label: Infrastructure and IaC}
+  - {id: container, label: Containers and orchestration}
+  - {id: data, label: Data and analytics}
+  - {id: database, label: Databases and storage}
+  - {id: messaging, label: Messaging and streaming}
+  - {id: security, label: Security}
+  - {id: observability, label: Observability}
+  - {id: frontend, label: Frontend}
+  - {id: iot, label: IoT hardware and protocols}
+  - {id: tooling, label: Tooling and platforms}
+  - {id: ai, label: AI and ML}
+
+technologies:
+  # ---- languages ----------------------------------------------------------------------
+  - {name: Python, group: language, aliases: [python3, py]}
+  - {name: SQL, group: language}
+  - {name: C++ (Arduino), group: language, aliases: [Arduino C++, arduino]}
+  - {name: Bash, group: language, aliases: [shell]}
+  - {name: JavaScript, group: language, aliases: [js]}
+  - {name: YAML, group: language}
+  # ---- frameworks and libraries -------------------------------------------------------
+  - {name: Flask, group: framework}
+  - {name: FastAPI, group: framework}
+  - {name: SQLAlchemy, group: framework}
+  - {name: pydantic, group: framework, aliases: [Pydantic]}
+  - {name: curl_cffi, group: framework, aliases: [curl-cffi]}
+  - {name: boto3, group: framework}
+  - {name: httpx, group: framework}
+  - {name: uvicorn, group: framework}
+  - {name: pytest, group: framework}
+  - {name: PyJWT, group: security, aliases: [JWT]}
+  - {name: bcrypt, group: security}
+  - {name: psycopg, group: framework, aliases: [psycopg3]}
+  - {name: PubSubClient, group: iot}
+  # ---- AWS ----------------------------------------------------------------------------
+  - {name: AWS, group: aws, aliases: [Amazon Web Services]}
+  - {name: Amazon VPC, group: aws, aliases: [VPC]}
+  - {name: VPC Peering, group: aws}
+  - {name: AWS Transit Gateway, group: aws, aliases: [Transit Gateway, TGW]}
+  - {name: NAT Gateway, group: aws}
+  - {name: Amazon EC2, group: aws, aliases: [EC2]}
+  - {name: AWS Systems Manager Session Manager, group: aws, aliases: [Session Manager, SSM]}
+  - {name: Amazon RDS, group: aws, aliases: [RDS, RDS PostgreSQL, Amazon RDS PostgreSQL]}
+  - {name: Amazon Aurora, group: aws, aliases: [Aurora, Aurora PostgreSQL]}
+  - {name: Aurora Global Database, group: aws}
+  - {name: Amazon ElastiCache, group: aws, aliases: [ElastiCache, ElastiCache Redis]}
+  - {name: Amazon DynamoDB, group: aws, aliases: [DynamoDB]}
+  - {name: Amazon Redshift, group: aws, aliases: [Redshift, Redshift Serverless]}
+  - {name: Amazon S3, group: aws, aliases: [S3]}
+  - {name: S3 Cross-Region Replication, group: aws, aliases: [S3 CRR]}
+  - {name: Amazon SQS, group: aws, aliases: [SQS]}
+  - {name: Amazon SNS, group: aws, aliases: [SNS]}
+  - {name: Amazon Kinesis Data Streams, group: aws, aliases: [Kinesis, Kinesis Data Streams]}
+  - {name: Amazon Kinesis Data Firehose, group: aws, aliases: [Kinesis Firehose, Firehose]}
+  - {name: Amazon EventBridge, group: aws, aliases: [EventBridge]}
+  - {name: AWS Step Functions, group: aws, aliases: [Step Functions]}
+  - {name: AWS Lambda, group: aws, aliases: [Lambda]}
+  - {name: Amazon ECR, group: aws, aliases: [ECR]}
+  - {name: Amazon EKS, group: aws, aliases: [EKS]}
+  - {name: Amazon ECS, group: aws, aliases: [ECS, ECS Fargate, AWS Fargate]}
+  - {name: Application Load Balancer, group: aws, aliases: [ALB]}
+  - {name: Amazon API Gateway, group: aws, aliases: [API Gateway, API Gateway REST, API Gateway WebSocket]}
+  - {name: AWS Amplify, group: aws, aliases: [Amplify, Amplify Hosting]}
+  - {name: Amazon Cognito, group: aws, aliases: [Cognito]}
+  - {name: AWS Secrets Manager, group: aws, aliases: [Secrets Manager]}
+  - {name: Amazon CloudWatch, group: aws, aliases: [CloudWatch]}
+  - {name: VPC Flow Logs, group: aws}
+  - {name: AWS WAF, group: aws, aliases: [WAF]}
+  - {name: AWS Glue, group: aws, aliases: [Glue]}
+  - {name: Amazon Athena, group: aws, aliases: [Athena]}
+  - {name: Amazon EMR, group: aws, aliases: [EMR]}
+  - {name: AWS CloudFormation, group: aws, aliases: [CloudFormation]}
+  - {name: AWS CodeDeploy, group: aws, aliases: [CodeDeploy]}
+  - {name: AWS IoT Core, group: aws, aliases: [IoT Core]}
+  - {name: AWS IAM, group: aws, aliases: [IAM]}
+  - {name: AWS CLI, group: aws}
+  - {name: AWS Academy Learner Lab, group: aws, aliases: [Learner Lab]}
+  # ---- infrastructure -----------------------------------------------------------------
+  - {name: Terraform, group: infrastructure}
+  - {name: GitHub Actions, group: infrastructure}
+  - {name: GitHub Actions self-hosted runners, group: infrastructure, aliases: [self-hosted runners]}
+  - {name: Ubuntu, group: infrastructure}
+  - {name: Vercel, group: infrastructure}
+  - {name: Neon, group: database, aliases: [Neon Postgres]}
+  # ---- containers ---------------------------------------------------------------------
+  - {name: Docker, group: container}
+  - {name: Kubernetes, group: container, aliases: [k8s]}
+  - {name: Helm, group: container}
+  - {name: kubectl, group: container}
+  - {name: Kubernetes NetworkPolicy, group: container, aliases: [NetworkPolicy]}
+  - {name: Pod Security Standards, group: container, aliases: [PSS]}
+  - {name: Horizontal Pod Autoscaler, group: container, aliases: [HPA]}
+  - {name: Kubernetes Secrets, group: container}
+  # ---- data ---------------------------------------------------------------------------
+  - {name: Apache Spark, group: data, aliases: [Spark, PySpark]}
+  - {name: Apache Parquet, group: data, aliases: [Parquet]}
+  - {name: RapidOCR, group: data, aliases: [rapidocr]}
+  - {name: ONNX Runtime, group: data, aliases: [onnxruntime]}
+  - {name: Web scraping, group: data, aliases: [scraping]}
+  - {name: OCR, group: data}
+  - {name: ETL, group: data}
+  - {name: RFM segmentation, group: data, aliases: [RFM]}
+  - {name: Regular expressions, group: data, aliases: [Regex]}
+  - {name: JSON, group: data}
+  - {name: CSV, group: data}
+  - {name: JSON Lines, group: data, aliases: [JSONL]}
+  # ---- databases ----------------------------------------------------------------------
+  - {name: PostgreSQL, group: database, aliases: [Postgres]}
+  - {name: SQLite, group: database}
+  - {name: Redis, group: database}
+  - {name: MySQL, group: database}
+  - {name: InfluxDB, group: database}
+  - {name: S3-compatible object storage, group: database, aliases: [IDrive e2, object storage]}
+  # ---- messaging ----------------------------------------------------------------------
+  - {name: MQTT, group: messaging}
+  - {name: WebSocket, group: messaging, aliases: [WebSockets]}
+  - {name: REST API, group: messaging, aliases: [REST]}
+  # ---- security -----------------------------------------------------------------------
+  - {name: X.509 certificates, group: security, aliases: [X.509]}
+  - {name: TLS, group: security, aliases: [SSL/TLS]}
+  - {name: IAM policies, group: security}
+  # ---- observability ------------------------------------------------------------------
+  - {name: Grafana, group: observability, aliases: [Grafana OSS]}
+  - {name: Prometheus, group: observability}
+  # ---- frontend -----------------------------------------------------------------------
+  - {name: React, group: frontend}
+  - {name: Vite, group: frontend}
+  - {name: Recharts, group: frontend}
+  - {name: React Router, group: frontend}
+  - {name: HTML/CSS, group: frontend, aliases: [HTML, CSS]}
+  - {name: Node-RED, group: frontend}
+  - {name: Node-RED Dashboard, group: frontend}
+  # ---- IoT ----------------------------------------------------------------------------
+  - {name: ESP32, group: iot}
+  - {name: DHT22, group: iot, aliases: [AM2302]}
+  - {name: Wi-Fi, group: iot, aliases: [WiFi]}
+  - {name: Arduino IDE, group: iot}
+  - {name: Relay module, group: iot, aliases: [Relay]}
+  # ---- tooling ------------------------------------------------------------------------
+  - {name: Git, group: tooling}
+  - {name: GitHub, group: tooling}
+  - {name: Node.js, group: tooling, aliases: [node]}
+  - {name: Makefile, group: tooling, aliases: [make]}
+  - {name: flake8, group: tooling}
+  - {name: wscat, group: tooling}
+  - {name: cURL, group: tooling, aliases: [curl]}
+  - {name: Telegram Bot API, group: tooling, aliases: [Telegram bot]}
+  # ---- AI -----------------------------------------------------------------------------
+  - {name: Groq API, group: ai, aliases: [Groq]}
+  - {name: Anthropic API, group: ai, aliases: [Claude API]}
+  - {name: LLM tool calling, group: ai, aliases: [tool calling]}

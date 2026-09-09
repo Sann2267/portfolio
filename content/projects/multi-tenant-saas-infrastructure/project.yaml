@@ -1,0 +1,177 @@
+id: case-005
+case_number: 5
+slug: multi-tenant-saas-infrastructure
+title: Multi-Tenant SaaS Infrastructure
+aliases: [Infrastructure as a Service module, cloudtech SaaS platform, IaaS]
+category: cloud
+domains: [cloud, devops]
+project_type: Multi-region Kubernetes platform with disaster recovery
+status: completed
+role: >-
+  Cloud infrastructure engineer (module exercise). Fixing and completing Terraform modules,
+  Kubernetes manifests, Helm values, Dockerfiles, application code, and Lambda functions that
+  the module ships with intentional bugs; deploying with CLI tooling only.
+context: >-
+  LKS Nasional 2026 Cloud Computing, Infrastructure as a Service module. Resources use the
+  cloudtech- prefix. Console-created resources lose points, so everything goes through
+  Terraform, Helm, kubectl, and the AWS CLI.
+period:
+  start: "2026"
+  precision: year
+  source: Module dated LKS Nasional 2026; working dates not documented.
+summary: >-
+  A multi-tenant SaaS platform on Amazon EKS across two regions: a dual-VPC design in Virginia
+  separating application and data, namespace-isolated tenants with restricted Pod Security
+  Standards and NetworkPolicy, an event-driven audit pipeline, Grafana on ECS Fargate,
+  blue/green canary releases through CodeDeploy, and an Oregon standby with Aurora Global
+  Database and S3 cross-region replication.
+technologies:
+  - Terraform
+  - Kubernetes
+  - Helm
+  - kubectl
+  - Docker
+  - Python
+  - Flask
+  - Kubernetes NetworkPolicy
+  - Pod Security Standards
+  - Horizontal Pod Autoscaler
+  - Kubernetes Secrets
+  - Grafana
+  - Prometheus
+  - PostgreSQL
+  - Redis
+  - REST API
+  - Bash
+aws_services:
+  - Amazon VPC
+  - VPC Peering
+  - AWS Transit Gateway
+  - NAT Gateway
+  - Amazon EKS
+  - Application Load Balancer
+  - Amazon ECR
+  - Amazon ECS
+  - Amazon Aurora
+  - Aurora Global Database
+  - Amazon ElastiCache
+  - Amazon Kinesis Data Streams
+  - AWS Lambda
+  - Amazon EventBridge
+  - Amazon SNS
+  - Amazon SQS
+  - Amazon DynamoDB
+  - Amazon S3
+  - S3 Cross-Region Replication
+  - AWS CodeDeploy
+  - Amazon CloudWatch
+  - AWS CLI
+  - AWS IAM
+  - AWS Academy Learner Lab
+highlights:
+  - >-
+    Dual-VPC design in us-east-1: an application VPC (10.10.0.0/16) with EKS, an ALB, and
+    Grafana on ECS Fargate, peered with a data VPC (10.20.0.0/16) holding Aurora PostgreSQL
+    Multi-AZ and ElastiCache Redis, for compute-to-data isolation.
+  - >-
+    Cross-region connectivity through Transit Gateway peering to a DR VPC (10.30.0.0/16) in
+    us-west-2 with an Aurora Global Database replica and S3 cross-region replication.
+  - >-
+    Tenant isolation with Kubernetes namespaces tenant-alpha and tenant-beta, restricted Pod
+    Security Standards, ResourceQuota, NetworkPolicy (ingress from the same namespace and
+    kube-system; egress to DNS, the data VPC, and HTTPS), and an HPA.
+  - >-
+    Event-driven audit trail: the Flask API publishes user CRUD events to Kinesis, a Lambda
+    forwards them to a custom EventBridge bus, which fans out to SNS, SQS with a dead-letter
+    queue, and a DynamoDB audit log with TTL.
+  - >-
+    Blue/green canary through CodeDeploy: 10% of traffic for five minutes, then 100%, with
+    automatic rollback on ALB health-check failure.
+  - >-
+    Automated DR trigger: a CloudWatch alarm on primary health starts an EventBridge rule and a
+    Lambda that initiates the Aurora Global Database failover and notifies through SNS.
+challenges:
+  - Terraform modules, Kubernetes manifests, Helm values, Dockerfiles, application code, and Lambda functions all contained intentional bugs, and some resources were missing entirely.
+  - Pods in the application VPC must reach Aurora and Redis in another VPC while remaining isolated per tenant.
+  - The ALB must route paths to two services in two tenant namespaces.
+  - Database credentials must never appear in plaintext.
+solutions:
+  - Bugs fixed inside modules/ only (main.tf untouched), with a versioned S3 backend for Terraform state.
+  - VPC peering routes in both directions with DNS resolution, security groups scoped to the application CIDR, NetworkPolicy egress to 10.20.0.0/16.
+  - AWS Load Balancer Controller with target groups for /api/* (port 8080) and / (port 3000).
+  - Kubernetes Secret cloudtech-db-secret consumed through secretKeyRef; ConfigMap for Redis host and Grafana URL.
+results:
+  - {text: "The module's acceptance is CRUD in both tenants, all dashboard indicators green, cross-VPC connectivity, and a security checklist; execution evidence was not kept.", basis: not_documented}
+targets:
+  - {text: "Recovery Time Objective of 15 minutes or less.", basis: target}
+  - {text: "Recovery Point Objective of 1 minute or less.", basis: target}
+future_work: []
+evidence:
+  - {kind: architecture, title: "Architecture and network diagrams from the module", basis: source}
+  - {kind: document, title: "LKS Nasional 2026 Infrastructure as a Service module (14 pages)", basis: source}
+repository:
+  status: unavailable
+  note: The working copy of the module repository was not published.
+demo:
+  status: unavailable
+  note: The Learner Lab environment is torn down after the session.
+documentation:
+  status: private
+  note: Competition module; not redistributed.
+architecture:
+  groups:
+    - {id: app_vpc, label: "Application VPC 10.10.0.0/16 (us-east-1)"}
+    - {id: data_vpc, label: "Data VPC 10.20.0.0/16 (us-east-1)"}
+    - {id: events, label: Event-driven pipeline}
+    - {id: delivery, label: Delivery and monitoring}
+    - {id: dr, label: "DR region us-west-2 (10.30.0.0/16)"}
+  nodes:
+    - {id: alb, label: ALB cloudtech-alb, service: Application Load Balancer, group: app_vpc, description: "Public subnets; /api/* to port 8080, / to port 3000."}
+    - {id: eks, label: EKS cluster, service: Amazon EKS, group: app_vpc, description: "EKS 1.31 in private subnets; namespaces tenant-alpha and tenant-beta; PSS restricted, ResourceQuota, NetworkPolicy, HPA."}
+    - {id: api, label: cloudtech-api (Flask), service: Flask, group: app_vpc, description: "2 replicas per tenant; port 8080 plus Prometheus metrics on 9100; publishes events to Kinesis."}
+    - {id: fe, label: cloudtech-fe (Flask), service: Flask, group: app_vpc, description: "1 replica per tenant on port 3000; checks Grafana through the ECS API."}
+    - {id: grafana, label: Grafana OSS on ECS Fargate, service: Amazon ECS, group: app_vpc, description: "Internal service in private subnets, reachable from 10.10.0.0/16 on port 3000."}
+    - {id: nat, label: NAT Gateway, service: NAT Gateway, group: app_vpc}
+    - {id: peering, label: VPC Peering, service: VPC Peering, group: data_vpc, description: "cloudtech-peering-app-data with DNS resolution and routes in both directions."}
+    - {id: aurora, label: Aurora PostgreSQL Multi-AZ, service: Amazon Aurora, group: data_vpc, description: "Isolated subnets; port 5432 from 10.10.0.0/16 only; publicly_accessible false."}
+    - {id: redis, label: ElastiCache Redis, service: Amazon ElastiCache, group: data_vpc, description: "Port 6379 from 10.10.0.0/16 only."}
+    - {id: kinesis, label: Kinesis cloudtech-event-stream, service: Amazon Kinesis Data Streams, group: events, description: "2 shards, 24 h retention."}
+    - {id: processor, label: Lambda cloudtech-event-processor, service: AWS Lambda, group: events, description: "Python 3.13; configuration from environment variables."}
+    - {id: bus, label: EventBridge cloudtech-saas-events, service: Amazon EventBridge, group: events, description: "Custom bus, source cloudtech.api."}
+    - {id: sns, label: SNS cloudtech-user-events, service: Amazon SNS, group: events}
+    - {id: sqs, label: SQS cloudtech-event-queue, service: Amazon SQS, group: events, description: "DLQ cloudtech-dlq, maxReceiveCount 3."}
+    - {id: audit, label: DynamoDB cloudtech-audit-log, service: Amazon DynamoDB, group: events, description: "PAY_PER_REQUEST with TTL expiresAt."}
+    - {id: ecr, label: "ECR (api, fe, monitoring)", service: Amazon ECR, group: delivery}
+    - {id: codedeploy, label: CodeDeploy blue/green, service: AWS CodeDeploy, group: delivery, description: "Canary 10% for 5 minutes then 100%; automatic rollback on ALB health failure."}
+    - {id: cloudwatch, label: CloudWatch alarms, service: Amazon CloudWatch, group: delivery, description: "cloudtech-api-error-rate (5xx > 10) and cloudtech-primary-health-alarm."}
+    - {id: s3_primary, label: S3 cloudtech-assets-primary, service: Amazon S3, group: delivery, description: "Versioned primary assets bucket with Block Public Access."}
+    - {id: tgw, label: Transit Gateway peering, service: AWS Transit Gateway, group: dr, description: "cloudtech-tgw-2026 (us-east-1) peered with cloudtech-tgw-secondary (us-west-2)."}
+    - {id: aurora_dr, label: Aurora Global Database replica, service: Aurora Global Database, group: dr}
+    - {id: s3_dr, label: S3 cross-region replication, service: S3 Cross-Region Replication, group: dr, description: "cloudtech-assets-primary (versioned) to cloudtech-assets-dr."}
+    - {id: failover, label: DR failover Lambda, service: AWS Lambda, group: dr, description: "Triggered by EventBridge from the health alarm; initiates Aurora failover and notifies cloudtech-dr-alerts."}
+  edges:
+    - {source: alb, target: api, label: /api/*}
+    - {source: alb, target: fe, label: /}
+    - {source: eks, target: nat, label: egress}
+    - {source: api, target: peering, label: 5432 / 6379}
+    - {source: peering, target: aurora}
+    - {source: peering, target: redis}
+    - {source: fe, target: grafana, label: status check}
+    - {source: api, target: kinesis, label: user CRUD events}
+    - {source: kinesis, target: processor}
+    - {source: processor, target: bus}
+    - {source: bus, target: sns}
+    - {source: bus, target: sqs}
+    - {source: bus, target: audit}
+    - {source: ecr, target: eks, label: images}
+    - {source: codedeploy, target: alb, label: traffic shift}
+    - {source: api, target: cloudwatch, label: 5xx metrics}
+    - {source: cloudwatch, target: failover, label: alarm via EventBridge}
+    - {source: failover, target: aurora_dr, label: promote}
+    - {source: aurora, target: aurora_dr, label: global replication}
+    - {source: s3_primary, target: s3_dr, label: cross-region replication}
+    - {source: tgw, target: peering, label: cross-region routes, direction: both}
+timeline:
+  - {date: "2026", title: "Infrastructure as a Service module: dual-VPC EKS platform with Oregon DR", basis: source}
+seo:
+  description: Multi-tenant EKS platform on AWS with dual-VPC isolation, event-driven audit pipeline, Grafana on Fargate, CodeDeploy blue/green, and cross-region disaster recovery.

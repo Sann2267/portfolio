@@ -1,0 +1,15 @@
+# ---- web framework (used from Phase 04) --------------------------------------
+Flask>=3.1.0
+Jinja2>=3.1.4
+
+# ---- content layer ----------------------------------------------------------
+# YAML metadata + Markdown narrative, validated into pydantic models at load time.
+PyYAML>=6.0.2
+pydantic>=2.9.0
+Markdown>=3.7
+
+# ---- configuration -----------------------------------------------------------
+python-dotenv>=1.0.1
+
+# ---- production server (Docker / non-Vercel hosts) ---------------------------
+gunicorn>=23.0.0

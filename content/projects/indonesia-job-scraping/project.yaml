@@ -1,0 +1,129 @@
+id: case-001
+case_number: 1
+slug: indonesia-job-scraping
+title: Indonesia Job Data Scraping System
+aliases: [loker-search, Instagram job-vacancy scraper]
+category: data
+domains: [data, backend]
+project_type: Scraping and extraction pipeline
+status: active
+role: Sole developer. Pipeline design, extraction, OCR, cleaning, tests.
+context: >-
+  Personal project. Runs locally, no login and no access-control bypass. Its output feeds the
+  Job Listing Dashboard (case 002).
+period:
+  start: 2026-08
+  precision: month
+  source: Reconnaissance verified live on 2026-08-11; still maintained.
+summary: >-
+  A local Python pipeline that collects publicly visible Instagram job-vacancy posts across
+  Indonesia's 38 provinces, reads the flyer images with OCR, extracts and normalises the vacancy
+  fields, deduplicates within and across runs, and stores structured output as JSON, JSON Lines,
+  CSV, and SQLite.
+technologies:
+  - Python
+  - curl_cffi
+  - pydantic
+  - RapidOCR
+  - ONNX Runtime
+  - SQLite
+  - JSON
+  - JSON Lines
+  - CSV
+  - YAML
+  - Regular expressions
+  - Groq API
+  - pytest
+  - Web scraping
+  - OCR
+  - Makefile
+aws_services: []
+highlights:
+  - >-
+    HTTP-only collection with browser TLS impersonation (curl_cffi, chrome124 profile). No login,
+    no CAPTCHA or access-control bypass, and a robots.txt notice with warn, enforce, and ignore
+    modes.
+  - >-
+    Nine-stage pipeline (discovery, fetch, parse, date filter, classify, OCR, normalise,
+    deduplicate, store) with one module per stage and a per-stage entry point for offline
+    debugging.
+  - >-
+    37-field pydantic output schema with extra="forbid". Unextractable fields stay null, which a
+    dedicated "nothing is fabricated" test enforces.
+  - >-
+    Three-key deduplication (post id, canonical URL, content hash) applied within a run and
+    across runs through a SQLite index.
+  - >-
+    Cleaning stage reads each post with a small LLM on Groq's free tier, validates every number
+    and e-mail digit-for-digit against the source text, and falls back to regex extractors when
+    no model can answer.
+challenges:
+  - Instagram's search and hashtag endpoints are login-walled, so keyword search is impossible for an anonymous client.
+  - Flyer text lives in images, and the default OCR model dropped the spaces between Latin-script words.
+  - Regex extraction mistook headings and slogans ("We Are Hiring") for job titles and employers.
+  - Endpoint behaviour changed twice (login walls on 2026-08-12 and 2026-09-04), shrinking anonymous reach.
+solutions:
+  - Account-based discovery. Curated seed accounts per province plus username templates, each verified anonymously; 82 accounts across 37 of 38 provinces.
+  - RapidOCR with the English PP-OCRv4 recogniser plus vocabulary-based re-spacing. Raw OCR text is always preserved next to the parsed fields.
+  - An LLM reader with strict validation against the source text and a phone gate that routes rows without a mobile number to a review file.
+  - A fail-loud error taxonomy. A 404 is per-input, a 403 or login redirect is terminal by policy, an unexpected JSON shape stops the run. Fallback to the signed-out profile surface when the feed endpoint closed.
+results:
+  - {text: "314 offline tests using trimmed real API responses as fixtures.", basis: code}
+  - {text: "Re-running the same scrape produced zero duplicate records (cross-run deduplication verified live).", basis: source}
+  - text: >-
+      On a 24-post hand-labelled gold set the LLM cleaning path produced entry-ready rows for
+      every post, while the regex-only path managed about one in five.
+    basis: code
+    note: Measured on 2026-09-07 with the evaluation script; only valid for the code that produced it.
+future_work:
+  - {text: "Revive snowball discovery if Instagram exposes a related-accounts surface again.", basis: planned}
+evidence:
+  - {kind: document, title: "README covering the pipeline, schema, compliance, and endpoint-status notes", basis: code}
+  - {kind: document, title: "Reconnaissance report with sanitised probe evidence", basis: code}
+  - {kind: log, title: "Extraction metrics report per run (tools/extraction_metrics.py)", basis: code}
+repository:
+  status: private
+  note: Backup repository under the author's GitHub account. The tool is meant for local execution.
+demo:
+  status: unavailable
+  note: Command-line tool without a hosted demo.
+documentation:
+  status: private
+  note: README and reconnaissance report live in the private repository.
+architecture:
+  groups:
+    - {id: input, label: Sources and configuration}
+    - {id: pipeline, label: Pipeline stages}
+    - {id: output, label: Outputs}
+  nodes:
+    - {id: instagram, label: Instagram public surfaces, status: external, group: input, description: "Signed-out profile, feed, and post pages. Search and hashtag endpoints are login-walled and never used."}
+    - {id: config, label: Configuration, group: input, description: "settings.yaml, 38 provinces and 478 cities, keyword lexicon, category taxonomy, 82 seed accounts."}
+    - {id: discovery, label: Discovery, service: Python, group: pipeline, description: "Seed accounts per province plus username templates, each verified anonymously."}
+    - {id: fetch, label: Fetch, service: curl_cffi, group: pipeline, description: "Timeline paging, newest first, stops at the start date. Chrome TLS impersonation."}
+    - {id: parse, label: Parse, service: pydantic, group: pipeline, description: "Instagram JSON to typed RawPost objects; unexpected shapes raise."}
+    - {id: classify, label: Classify, group: pipeline, description: "Keyword-and-weight scoring producing is_job_post and a confidence."}
+    - {id: ocr, label: OCR, service: RapidOCR, group: pipeline, description: "Flyer images read locally with the English PP-OCRv4 recogniser; raw text kept verbatim."}
+    - {id: normalise, label: Normalise, group: pipeline, description: "Caption and OCR merged into title, company, salary, contacts; province and city from five weighted signals."}
+    - {id: clean, label: Clean (LLM + regex), service: Groq API, group: pipeline, description: "LLM reader validated against the source text, regex fallback, phone gate."}
+    - {id: dedup, label: Deduplicate, service: SQLite, group: pipeline, description: "post_id, canonical URL, content hash; within and across runs."}
+    - {id: store, label: Store, group: output, description: "Raw JSON, processed JSON, JSON Lines, CSV, SQLite, entry-ready TXT per province."}
+    - {id: dashboard, label: Job Listing Dashboard, group: output, status: external, related_cases: [job-listing-dashboard], description: "Case 002 reads the SQLite corpus and syncs it to Postgres."}
+  edges:
+    - {source: config, target: discovery}
+    - {source: instagram, target: fetch, label: HTTPS, protocol: HTTP}
+    - {source: discovery, target: fetch}
+    - {source: fetch, target: parse}
+    - {source: parse, target: classify}
+    - {source: classify, target: ocr}
+    - {source: ocr, target: normalise}
+    - {source: normalise, target: clean}
+    - {source: clean, target: dedup}
+    - {source: dedup, target: store}
+    - {source: store, target: dashboard, label: read-only SQLite}
+timeline:
+  - {date: 2026-08-11, title: "Reconnaissance verified live; pipeline built", basis: source}
+  - {date: 2026-08-12, title: "First Instagram login wall; signed-out profile fallback", basis: source}
+  - {date: 2026-09-04, title: "feed/user login wall; signed-out post-page fallback", basis: source}
+  - {date: 2026-09-07, title: "LLM cleaning reader and evaluation harness added", basis: source}
+seo:
+  description: A Python pipeline that scrapes public Instagram job posts across Indonesia, reads flyers with OCR, and produces validated structured data.
