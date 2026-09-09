@@ -7,8 +7,8 @@ venv/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
-build/
-dist/
+/build/
+/dist/
 
 # ---- environment and secrets ----------------------------------------------
 .env
