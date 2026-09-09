@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: pip install -r requirements-dev.txt
+      - name: Lint and format
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Byte-compile
+        run: python -m compileall -q app config.py wsgi.py
+      - name: Validate content
+        run: python -m app.content
+      - name: Tests
+        run: python -m pytest
+      - name: Production configuration boots
+        env:
+          APP_ENV: production
+          SECRET_KEY: ci-only-secret-key
+          SITE_URL: https://example.com
+        run: python -c "from wsgi import app; print(app.name, len(app.url_map._rules), 'rules')"
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t case-room:ci .
+      - name: Run container and probe health
+        run: |
+          docker run -d --name case-room -p 8000:8000 \
+            -e SECRET_KEY=ci-only-secret-key -e SITE_URL=http://127.0.0.1:8000 case-room:ci
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/healthz && break; sleep 1; done
+          curl -fsS http://127.0.0.1:8000/ | grep -q "Investigation board"
+          curl -fsS -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8000/projects/technodev-devops-cicd
+          docker logs case-room | tail -5
+          docker rm -f case-room

@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Phase | 02 — Content model complete (Phase 01 audit and architecture retained below) |
-| Status | Content layer implemented in `app/models` and `app/content`; see `docs/CONTENT_GUIDE.md`. Design system begins in Phase 03. |
-| Audit date | 2026-09-09 |
+| Phase | 10 — all phases complete (the Phase 01 audit is retained below as the record of the starting point) |
+| Status | Released to https://github.com/Sann2267/portfolio; deployment steps in README §7. |
+| Audit date | 2026-09-09 (build completed the same day) |
 | Owner | Ibnu Adzim (GitHub `Sann2267`) |
 | Governing specs | `00_MASTER_BUILD.md` … `10_VERIFICATION_AND_RELEASE.md`, `SETTING.md` |
 
@@ -530,7 +530,13 @@ py -3.12 -m compileall -q app config.py wsgi.py
 ```
 
 A GitHub Actions workflow (Python only, GitHub-hosted runner) runs the same commands on push and pull
-request. Each phase ends with the suite green before the next phase begins.
+request, then boots the app with a production configuration. Each phase ended with the suite green
+before the next phase began.
+
+Browser-level verification (overflow at three viewports, keyboard focus order, reduced motion,
+hover and palette states) was done with a small puppeteer-core script driving the installed Edge.
+It lives outside the repository because it needs Node; the checks it performs are listed in the
+README so they can be repeated.
 
 ---
 
@@ -648,19 +654,30 @@ with a copy-paste template for a new case.
 
 ---
 
-## Phase status and handoff
+## Build record
 
-Phase 02 (content model) delivered `app/models`, `app/content` (loader, registry, Markdown, CLI
-validator), `content/` for all six cases plus profile, skills, timeline, and taxonomy, the test suite
-under `tests/`, and `docs/CONTENT_GUIDE.md`. All PDF and repository sources were read; the schema was
-frozen from the union of `00`, `02`, `06`, `07`, and `SETTING.md`.
+| Phase | Delivered | Verified by |
+|---|---|---|
+| 01 Audit and architecture | This document, repository bootstrap, sources kept out of git | Heading and identity checks |
+| 02 Content model | `app/models`, `app/content`, six cases, profile, skills, timeline, taxonomy, `docs/CONTENT_GUIDE.md` | 60 content and model tests, `python -m app.content` |
+| 03 Design system | Tokens, base and component CSS, icon sprite, Jinja macros, `docs/DESIGN_SYSTEM.md` | Token contract and macro-render tests; no raw colours outside tokens |
+| 04 Core application | Factory, config, content provider, blueprints, services, base layout, page templates, case renderer, error pages, security headers, vendored HTMX | Route, fragment, meta, and header tests |
+| 05 Detective room UI | Room composition for three breakpoints, board highlighting and connectors, monitor, terminal | Room tests; headless screenshots at 1440, 900, and 390 px |
+| 06 Project case system | Case layout, section omission, cross-links, technology pages | Case-system tests; screenshots |
+| 07 Interactive architecture | Layout service, SVG macro, node detail fragments, hover/focus/select script, text version | Layout, render, and partial tests; hover screenshot |
+| 08 Search, filter, navigation | Command palette with live results, quick filters, AWS umbrella filter | Navigation tests; palette screenshot |
+| 09 Responsive, accessibility, performance | Collapsible sections, sitemap, robots, OG image, a11y and SEO tests | Sweep of 17 routes × 3 viewports with zero overflow; focus order; reduced motion |
+| 10 Verification and release | README, Dockerfile, CI workflow, env example, release tests, spec files moved to `docs/build/` | Full suite, production boot, secret scan, fake-project end-to-end test |
 
-Open items carried into later phases:
+Deviations from the Phase 01 plan, all recorded in the decision log: technology URLs use slugs;
+`wsgi.py` remains the single entry point; the screenshot sweep is a Node tool kept outside the
+repository (the user permitted Node as optional dev tooling).
 
-1. No screenshot or image evidence exists yet. Evidence lists documentation, architecture, and
-   technical breakdown only; `static/images/projects/<slug>/` is empty until the user supplies assets.
-2. The deck's dashboard image for case 006 is a stock Node-RED image and must not be used as a
+Known limitations at release:
+
+1. No screenshot or image evidence exists yet; evidence lists documentation, architecture, and
+   technical breakdown only. Images can be added per `docs/CONTENT_GUIDE.md` §5 without code changes.
+2. The Vercel static-asset path (function versus CDN) is documented but was not exercised with a
+   preview deployment from this machine, which has no Vercel CLI session.
+3. The deck's dashboard image for case 006 is a stock Node-RED image and must not be used as a
    screenshot.
-3. Phase 03 defines the visual tokens; Phase 04 wires `load_registry` into the Flask factory with the
-   dev-mode reload described under Content flow; Phase 07 implements the layout for the
-   `architecture` data already present in every case.

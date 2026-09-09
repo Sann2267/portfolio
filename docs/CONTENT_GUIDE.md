@@ -5,7 +5,7 @@ comes from `content/`; the templates only render what the models provide.
 
 | | |
 |---|---|
-| Status | Written in Phase 02 (content model). Rendering details are added in Phases 04 to 06. |
+| Status | Current as of the Phase 10 release. Everything here is enforced by the loader and the test suite. |
 | Validate | `.venv\Scripts\python -m app.content` (exit code 1 and a file/field message on any error) |
 | Tests | `.venv\Scripts\python -m pytest` |
 

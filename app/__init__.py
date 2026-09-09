@@ -7,6 +7,7 @@ and exposed through :func:`get_registry`.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -55,6 +56,13 @@ def create_app(
         static_url_path="/static",
     )
     app.config.from_object(config)
+    # Runtime environment wins over class defaults (which are read at import time).
+    for key in ("SECRET_KEY", "SITE_URL", "CONTENT_DIR"):
+        value = os.environ.get(key)
+        if value:
+            app.config[key] = value.rstrip("/") if key == "SITE_URL" else value
+    if config.TESTING:
+        app.config["SITE_URL"] = config.SITE_URL  # tests never depend on the shell environment
     if content_dir is not None:
         app.config["CONTENT_DIR"] = Path(content_dir)
     if overrides:
