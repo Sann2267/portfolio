@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flask import Blueprint, current_app, jsonify, render_template, request
+from flask import Blueprint, Response, current_app, jsonify, render_template, request, url_for
 
 from app import get_registry
 from app.services.project_service import system_lines
@@ -81,3 +81,33 @@ def contact():
 def healthz():
     registry = get_registry()
     return jsonify({"status": "ok", "cases": len(registry.projects)})
+
+
+@bp.get("/robots.txt")
+def robots():
+    site = current_app.config["SITE_URL"]
+    body = f"User-agent: *\nAllow: /\nDisallow: /search\nSitemap: {site}/sitemap.xml\n"
+    return Response(body, mimetype="text/plain")
+
+
+@bp.get("/sitemap.xml")
+def sitemap():
+    registry = get_registry()
+    site = current_app.config["SITE_URL"]
+    paths = [
+        url_for("pages.home"),
+        url_for("projects.index"),
+        url_for("pages.skills"),
+        url_for("pages.timeline"),
+        url_for("pages.contact"),
+    ]
+    paths += [url_for("projects.detail", slug=p.slug) for p in registry.projects]
+    seen: set[str] = set()
+    for name in registry.technologies():
+        tech = registry.taxonomy.resolve(name)
+        slug = tech.slug if tech else name
+        if slug not in seen:
+            seen.add(slug)
+            paths.append(url_for("projects.technology", name=slug))
+    body = render_template("sitemap.xml", site=site, paths=paths)
+    return Response(body, mimetype="application/xml")

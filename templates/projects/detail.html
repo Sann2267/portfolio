@@ -32,11 +32,16 @@
   <div class="case__body">
     {% for section in sections %}
     <section class="section case__section" id="{{ section.key }}" aria-labelledby="{{ section.key }}-title">
-      <div class="section__head">
-        <span class="section__index">{{ section.index }}</span>
-        <h2 id="{{ section.key }}-title">{{ section.title }}</h2>
-      </div>
-      {% include "projects/sections/" ~ section.key ~ ".html" %}
+      <details class="fold" open>
+        <summary class="section__head">
+          <span class="section__index">{{ section.index }}</span>
+          <h2 id="{{ section.key }}-title">{{ section.title }}</h2>
+          <svg class="icon section__toggle" aria-hidden="true"><use href="#i-arrow"/></svg>
+        </summary>
+        <div class="fold__body">
+          {% include "projects/sections/" ~ section.key ~ ".html" %}
+        </div>
+      </details>
     </section>
     {% endfor %}
   </div>

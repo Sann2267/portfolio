@@ -139,6 +139,14 @@
 
 .case__section:first-child { padding-top: 0; border-top: 0; }
 .case__section { scroll-margin-top: calc(var(--nav-height) + var(--space-4)); }
+
+/* Sections are <details> so they can be collapsed on small screens; open by default. */
+.fold > summary { list-style: none; cursor: pointer; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary .section__toggle { margin-left: auto; color: var(--color-text-muted); transition: transform var(--dur-fast) var(--ease); }
+.fold[open] > summary .section__toggle { transform: rotate(90deg); }
+.fold > summary:hover h2 { color: var(--color-accent-active); }
+.fold__body { padding-top: var(--space-1); }
 .case__section .eyebrow { margin: var(--space-4) 0 var(--space-2); }
 .case__section .eyebrow:first-child { margin-top: 0; }
 
@@ -208,7 +216,7 @@
 .arch__node rect { fill: var(--color-surface-elevated); stroke: var(--color-border-strong); stroke-width: 1.25; transition: stroke var(--dur-fast) var(--ease), fill var(--dur-fast) var(--ease); }
 .arch__node-label { font-size: 12px; font-weight: 600; fill: var(--color-text-primary); }
 .arch__node-service { font-family: var(--font-mono); font-size: 10px; fill: var(--color-text-muted); }
-.arch__node-status { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--color-accent-warning); }
+.arch__node-status { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--color-accent-warning); }
 .arch__node--planned rect { stroke-dasharray: 5 4; fill: var(--color-surface); }
 .arch__node--planned .arch__node-label { fill: var(--color-text-secondary); }
 .arch__node--external rect,

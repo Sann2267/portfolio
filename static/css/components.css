@@ -287,6 +287,10 @@ a.badge:hover,
 .case-card__title a { text-decoration: none; }
 .case-card__title a::after { content: ""; position: absolute; inset: 0; }
 
+/* Badges sit above the title's whole-card overlay so technology links stay clickable. */
+.case-card .badge-list,
+.case-card__foot { position: relative; z-index: 1; }
+
 .case-card__summary {
   margin: 0;
   color: var(--color-text-secondary);
