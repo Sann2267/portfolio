@@ -1,0 +1,51 @@
+{# Interactive architecture diagram rendered from a Layout (app.services.diagram_service).
+   Readable as static SVG; diagram.js adds hover/focus highlighting and the detail drawer. #}
+{% from "components/overlays.html" import drawer %}
+
+{% macro architecture_diagram(layout, project, detail_url_for) -%}
+<figure class="arch" data-arch data-node-count="{{ layout.nodes|length }}">
+  <div class="arch__scroll">
+    <svg class="arch__svg" viewBox="0 0 {{ layout.width|round(1) }} {{ layout.height|round(1) }}" width="{{ layout.width|round|int }}" height="{{ layout.height|round|int }}" role="img" aria-labelledby="arch-title" aria-describedby="arch-desc">
+      <title id="arch-title">Architecture of {{ project.title }}</title>
+      <desc id="arch-desc">{{ layout.nodes|length }} components in {{ layout.groups|length }} groups with {{ layout.edges|length }} connections. Planned components use dashed outlines. A text version follows the diagram.</desc>
+      <defs>
+        <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5 0 10z"/></marker>
+      </defs>
+      <g class="arch__groups">
+        {% for g in layout.groups %}
+        <g class="arch__group" data-group="{{ g.id }}">
+          <rect x="{{ g.x }}" y="{{ g.y }}" width="{{ g.w }}" height="{{ g.h }}" rx="10"/>
+          <text class="arch__group-label" x="{{ g.x + 14 }}" y="{{ g.y + 18 }}">{{ g.label|upper|truncate(26, True, '…') }}</text>
+        </g>
+        {% endfor %}
+      </g>
+      <g class="arch__edges">
+        {% for e in layout.edges %}
+        <path class="arch__edge arch__edge--{{ e.direction }} trace" data-edge="{{ e.id }}" data-source="{{ e.source }}" data-target="{{ e.target }}" d="{{ e.path }}"{% if e.direction != 'none' %} marker-end="url(#arch-arrow)"{% endif %}{% if e.direction == 'both' %} marker-start="url(#arch-arrow)"{% endif %}/>
+        {% if e.label %}<text class="arch__edge-label" data-edge-label="{{ e.id }}" x="{{ e.label_x|round(1) }}" y="{{ e.label_y|round(1) }}" text-anchor="middle">{{ e.label|truncate(22, True, '…') }}</text>{% endif %}
+        {% endfor %}
+      </g>
+      <g class="arch__nodes">
+        {% for n in layout.nodes %}
+        <a class="arch__node arch__node--{{ n.status }}" href="#node-{{ n.id }}" data-node="{{ n.id }}" data-detail-url="{{ detail_url_for(n.id) }}" aria-label="{{ n.label }}{% if n.service %}, {{ n.service }}{% endif %}{% if n.status != 'implemented' %}, {{ n.status|replace('_', ' ') }}{% endif %}">
+          <title>{{ n.label }}{% if n.description %} — {{ n.description }}{% endif %}</title>
+          <rect x="{{ n.x }}" y="{{ n.y }}" width="{{ n.w }}" height="{{ n.h }}" rx="7"/>
+          <text class="arch__node-label" x="{{ n.x + 12 }}" y="{{ n.y + 23 }}">{{ n.label|truncate(24, True, '…') }}</text>
+          {% if n.service %}<text class="arch__node-service" x="{{ n.x + 12 }}" y="{{ n.y + 41 }}">{{ n.service|truncate(27, True, '…') }}</text>{% endif %}
+          {% if n.status != 'implemented' %}<text class="arch__node-status" x="{{ n.x + n.w - 10 }}" y="{{ n.y + 14 }}" text-anchor="end">{{ n.status|replace('_', ' ') }}</text>{% endif %}
+        </a>
+        {% endfor %}
+      </g>
+    </svg>
+  </div>
+  <figcaption class="arch__legend mono small">
+    <span><i class="arch__swatch"></i> implemented</span>
+    <span><i class="arch__swatch arch__swatch--planned"></i> planned</span>
+    <span><i class="arch__swatch arch__swatch--external"></i> external / provided</span>
+    <span class="arch__hint">Hover or focus a component to trace its connections; select it for details.</span>
+  </figcaption>
+  {% call drawer("arch-detail", "Component", floating=True) %}
+  <p class="muted small">Select a component in the diagram.</p>
+  {% endcall %}
+</figure>
+{%- endmacro %}

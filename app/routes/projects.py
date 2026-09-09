@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from flask import Blueprint, abort, current_app, render_template, request
+from flask import Blueprint, abort, current_app, render_template, request, url_for
 
 from app import get_registry
+from app.services.diagram_service import build_layout
 from app.services.project_service import (
     Filters,
     filter_options,
@@ -47,6 +48,7 @@ def detail(slug: str):
     project = registry.get(slug)
     if project is None:
         abort(404)
+    layout = build_layout(project.architecture) if project.has_architecture else None
     return render_template(
         "projects/detail.html",
         meta=project_meta(current_app.config, project, request.path),
@@ -54,6 +56,37 @@ def detail(slug: str):
         sections=sections_for(project, registry),
         related=registry.related(project.slug),
         stack=stack_groups(project, registry.taxonomy),
+        layout=layout,
+        node_detail_url=lambda node_id: url_for("projects.node_detail", slug=slug, node_id=node_id),
+    )
+
+
+@bp.get("/projects/<slug>/nodes/<node_id>")
+def node_detail(slug: str, node_id: str):
+    """Server-rendered fragment for one architecture component (drawer content)."""
+    registry = get_registry()
+    project = registry.get(slug)
+    if project is None or not project.has_architecture:
+        abort(404)
+    arch = project.architecture
+    node = arch.node(node_id)
+    if node is None:
+        abort(404)
+    connections = []
+    for edge in arch.edges:
+        if edge.source == node.id and edge.target != node.id:
+            connections.append((edge, arch.node(edge.target), True))
+        elif edge.target == node.id and edge.source != node.id:
+            connections.append((edge, arch.node(edge.source), False))
+    group_label = next((g.label for g in arch.groups if g.id == node.group), "Component")
+    related = [registry.by_slug[s] for s in node.related_cases if s in registry.by_slug]
+    return render_template(
+        "partials/node_detail.html",
+        project=project,
+        node=node,
+        group_label=group_label,
+        connections=connections,
+        related=related,
     )
 
 

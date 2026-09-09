@@ -1,0 +1,21 @@
+{# One architecture component: served at /projects/<slug>/nodes/<id> and injected into the drawer. #}
+<article class="node-detail" data-node-detail="{{ node.id }}">
+  <p class="eyebrow">{{ group_label }}{% if node.status != 'implemented' %} · <span class="tag">{{ node.status|replace('_', ' ') }}</span>{% endif %}</p>
+  <h4 class="node-detail__title">{{ node.label }}</h4>
+  {% if node.service %}<p><a class="badge" href="{{ tech_href(node.service) }}">{{ node.service }}</a></p>{% endif %}
+  {% if node.description %}<p class="node-detail__text secondary small">{{ node.description }}</p>{% endif %}
+  {% if connections %}
+  <p class="eyebrow">Connections</p>
+  <ul class="node-detail__edges small">
+    {% for edge, other, outgoing in connections %}
+    <li><span class="mono">{{ '→' if outgoing else '←' }}</span> <a href="#node-{{ other.id }}" data-node-link="{{ other.id }}">{{ other.label }}</a>{% if edge.label %} <span class="muted">· {{ edge.label }}</span>{% endif %}{% if edge.protocol %} <span class="muted">({{ edge.protocol }})</span>{% endif %}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if related %}
+  <p class="eyebrow">Related cases</p>
+  <ul class="node-detail__cases small">
+    {% for project in related %}<li><a href="{{ case_href(project.slug) }}">{{ project.case_label }} {{ project.title }}</a></li>{% endfor %}
+  </ul>
+  {% endif %}
+</article>

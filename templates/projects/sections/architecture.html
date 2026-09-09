@@ -1,34 +1,40 @@
+{% from "components/architecture.html" import architecture_diagram %}
 {% set arch = project.architecture %}
-<div class="arch-static">
-  <p class="secondary small">Components grouped by layer, then the connections between them. Planned components are marked.</p>
-  {% for group in arch.groups %}
-  <section class="arch-static__group">
-    <h3 class="arch-static__label">{{ group.label }}</h3>
-    <ul class="arch-static__nodes">
-      {% for node in arch.nodes if node.group == group.id %}
-      <li class="arch-static__node" data-status="{{ node.status }}">
-        <strong>{{ node.label }}</strong>
-        {% if node.service %}<a class="badge" href="{{ tech_href(node.service) }}">{{ node.service }}</a>{% endif %}
-        {% if node.status != 'implemented' %}<span class="tag">{{ node.status|replace('_', ' ') }}</span>{% endif %}
-        {% if node.description %}<p class="small secondary">{{ node.description }}</p>{% endif %}
-      </li>
+{% if layout %}
+{{ architecture_diagram(layout, project, node_detail_url) }}
+{% endif %}
+<details class="arch-text">
+  <summary class="btn btn--ghost btn--sm">Text version of the diagram</summary>
+  <div class="arch-static">
+    {% for group in arch.groups %}
+    <section class="arch-static__group">
+      <h3 class="arch-static__label">{{ group.label }}</h3>
+      <ul class="arch-static__nodes">
+        {% for node in arch.nodes if node.group == group.id %}
+        <li class="arch-static__node" id="node-{{ node.id }}" data-status="{{ node.status }}">
+          <strong>{{ node.label }}</strong>
+          {% if node.service %}<a class="badge" href="{{ tech_href(node.service) }}">{{ node.service }}</a>{% endif %}
+          {% if node.status != 'implemented' %}<span class="tag">{{ node.status|replace('_', ' ') }}</span>{% endif %}
+          {% if node.description %}<p class="small secondary">{{ node.description }}</p>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endfor %}
+    {% set loose = arch.nodes|rejectattr('group')|list %}
+    {% if loose %}
+    <section class="arch-static__group">
+      <h3 class="arch-static__label">Components</h3>
+      <ul class="arch-static__nodes">
+        {% for node in loose %}<li class="arch-static__node" id="node-{{ node.id }}"><strong>{{ node.label }}</strong>{% if node.description %}<p class="small secondary">{{ node.description }}</p>{% endif %}</li>{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+    <h3 class="arch-static__label">Connections</h3>
+    <ul class="arch-static__edges mono small">
+      {% for edge in arch.edges %}
+      <li>{{ arch.node(edge.source).label }} {{ '↔' if edge.direction == 'both' else ('—' if edge.direction == 'none' else '→') }} {{ arch.node(edge.target).label }}{% if edge.label %} <span class="muted">· {{ edge.label }}</span>{% endif %}{% if edge.protocol %} <span class="muted">({{ edge.protocol }})</span>{% endif %}</li>
       {% endfor %}
     </ul>
-  </section>
-  {% endfor %}
-  {% set loose = arch.nodes|rejectattr('group')|list %}
-  {% if loose %}
-  <section class="arch-static__group">
-    <h3 class="arch-static__label">Components</h3>
-    <ul class="arch-static__nodes">
-      {% for node in loose %}<li class="arch-static__node"><strong>{{ node.label }}</strong>{% if node.description %}<p class="small secondary">{{ node.description }}</p>{% endif %}</li>{% endfor %}
-    </ul>
-  </section>
-  {% endif %}
-  <h3 class="arch-static__label">Connections</h3>
-  <ul class="arch-static__edges mono small">
-    {% for edge in arch.edges %}
-    <li>{{ arch.node(edge.source).label }} {{ '↔' if edge.direction == 'both' else ('—' if edge.direction == 'none' else '→') }} {{ arch.node(edge.target).label }}{% if edge.label %} <span class="muted">· {{ edge.label }}</span>{% endif %}{% if edge.protocol %} <span class="muted">({{ edge.protocol }})</span>{% endif %}</li>
-    {% endfor %}
-  </ul>
-</div>
+  </div>
+</details>
