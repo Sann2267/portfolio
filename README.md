@@ -47,7 +47,7 @@ Environment variables (see `.env.example`):
 |---|---|---|
 | `APP_ENV` | `development`, `testing`, or `production` | `development` |
 | `SECRET_KEY` | Flask secret; required in production | development-only value |
-| `SITE_URL` | Canonical and Open Graph URLs, sitemap; required in production | `http://127.0.0.1:5000` |
+| `SITE_URL` | Canonical and Open Graph URLs, sitemap; required in production (Vercel falls back to its own hostname) | `http://127.0.0.1:5000` |
 | `CONTENT_DIR` | Alternative content directory | `./content` |
 
 ---
@@ -175,7 +175,8 @@ lives outside the repository because it needs Node.
 ## 7. Running in production
 
 Set `APP_ENV=production`, `SECRET_KEY`, and `SITE_URL`. The app refuses to start in production
-without them.
+without them. On Vercel, `SITE_URL` may be left empty: the deployment's own hostname
+(`VERCEL_PROJECT_PRODUCTION_URL`) is used until you set a custom domain.
 
 **Vercel (Python runtime).** Zero configuration: Vercel installs `requirements.txt`, detects
 Flask, and uses the entry point declared in `pyproject.toml` (`[tool.vercel] entrypoint =

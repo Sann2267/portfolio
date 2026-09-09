@@ -115,6 +115,24 @@ def test_production_config_requires_environment(monkeypatch):
     )
 
 
+def test_production_on_vercel_derives_site_url(monkeypatch):
+    monkeypatch.setenv("SECRET_KEY", "y" * 32)
+    monkeypatch.delenv("SITE_URL", raising=False)
+    monkeypatch.setenv("VERCEL_PROJECT_PRODUCTION_URL", "portfolio-example.vercel.app")
+    app = create_app("production")
+    assert app.config["SITE_URL"] == "https://portfolio-example.vercel.app"
+    html = app.test_client().get("/robots.txt").get_data(as_text=True)
+    assert "Sitemap: https://portfolio-example.vercel.app/sitemap.xml" in html
+
+
+def test_vercelignore_keeps_content_markdown():
+    lines = (ROOT / ".vercelignore").read_text(encoding="utf-8").split()
+    assert "*.md" not in lines, (
+        "an unanchored *.md would drop content/**/case.md from the deployment"
+    )
+    assert "content" not in lines and "static" not in lines and "templates" not in lines
+
+
 def test_unknown_environment_is_rejected():
     with pytest.raises(RuntimeError, match="unknown APP_ENV"):
         create_app("staging")

@@ -39,12 +39,31 @@ class TestingConfig(BaseConfig):
     SITE_URL = "https://example.test"
 
 
+VERCEL_URL_VARIABLES = ("VERCEL_PROJECT_PRODUCTION_URL", "VERCEL_URL")
+
+
+def site_url_from_environment() -> str | None:
+    """``SITE_URL`` if set; otherwise the hostname Vercel injects for the deployment."""
+    explicit = os.environ.get("SITE_URL", "").strip()
+    if explicit:
+        return explicit.rstrip("/")
+    for name in VERCEL_URL_VARIABLES:
+        host = os.environ.get(name, "").strip()
+        if host:
+            return f"https://{host}".rstrip("/")
+    return None
+
+
 class ProductionConfig(BaseConfig):
     PREFERRED_URL_SCHEME = "https"
 
     @classmethod
     def validate(cls) -> None:
-        missing = [name for name in ("SECRET_KEY", "SITE_URL") if not os.environ.get(name)]
+        missing = []
+        if not os.environ.get("SECRET_KEY"):
+            missing.append("SECRET_KEY")
+        if not site_url_from_environment():
+            missing.append("SITE_URL")
         if missing:
             raise RuntimeError(
                 "production configuration is incomplete; set the environment variables: "

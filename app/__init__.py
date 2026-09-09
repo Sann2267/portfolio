@@ -16,7 +16,7 @@ from flask import Flask, current_app, render_template, request
 from app.content.errors import ContentError
 from app.content.provider import ContentProvider
 from app.content.registry import ContentRegistry
-from config import ProductionConfig, get_config
+from config import ProductionConfig, get_config, site_url_from_environment
 
 NAV_ITEMS: tuple[tuple[str, str, str], ...] = (
     # (key, label, endpoint)
@@ -57,10 +57,13 @@ def create_app(
     )
     app.config.from_object(config)
     # Runtime environment wins over class defaults (which are read at import time).
-    for key in ("SECRET_KEY", "SITE_URL", "CONTENT_DIR"):
+    for key in ("SECRET_KEY", "CONTENT_DIR"):
         value = os.environ.get(key)
         if value:
-            app.config[key] = value.rstrip("/") if key == "SITE_URL" else value
+            app.config[key] = value
+    site_url = site_url_from_environment()
+    if site_url:
+        app.config["SITE_URL"] = site_url
     if config.TESTING:
         app.config["SITE_URL"] = config.SITE_URL  # tests never depend on the shell environment
     if content_dir is not None:

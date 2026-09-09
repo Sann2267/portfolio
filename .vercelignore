@@ -9,4 +9,4 @@ docs
 Dockerfile
 .dockerignore
 requirements-dev.txt
-*.md
+/*.md
