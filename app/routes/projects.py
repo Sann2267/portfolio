@@ -10,6 +10,7 @@ from app.services.project_service import (
     Filters,
     filter_options,
     filter_projects,
+    quick_filters,
     sections_for,
     stack_groups,
 )
@@ -29,6 +30,8 @@ def index():
         "projects": projects,
         "filters": filters,
         "options": filter_options(registry),
+        "quick_filters": quick_filters(registry),
+        "tech_label": _tech_label(registry, filters.tech),
         "total": len(registry.projects),
     }
     if is_htmx(request):
@@ -104,3 +107,10 @@ def technology(name: str):
         path=request.path,
     )
     return render_template("projects/technology.html", meta=meta, view=view)
+
+
+def _tech_label(registry, name: str | None) -> str | None:
+    if not name:
+        return None
+    tech = registry.taxonomy.resolve(name)
+    return tech.name if tech else name

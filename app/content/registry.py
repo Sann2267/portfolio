@@ -13,6 +13,7 @@ from app.models.skills import Skill, SkillGroup
 from app.models.taxonomy import Taxonomy
 from app.models.timeline import TimelineEvent
 
+AWS_UMBRELLA = "AWS"  # the umbrella technology: matches any case that uses an AWS service
 SHARED_TECHNOLOGY_WEIGHT = 1.0
 SHARED_SERVICE_WEIGHT = 1.5
 SAME_CATEGORY_WEIGHT = 1.0
@@ -73,6 +74,8 @@ class ContentRegistry:
     def projects_for_technology(self, name: str) -> tuple[Project, ...]:
         tech = self.taxonomy.resolve(name)
         canonical = tech.name if tech else name
+        if canonical == AWS_UMBRELLA:
+            return tuple(p for p in self.projects if p.aws_services)
         slugs = self.by_technology.get(canonical, ()) + self.by_service.get(canonical, ())
         return tuple(self.by_slug[s] for s in dict.fromkeys(slugs))
 

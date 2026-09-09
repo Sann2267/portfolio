@@ -171,9 +171,34 @@ def _register_context(app: Flask) -> None:
             "registry_stats": registry.stats(),
             "registry_case": registry.get,
             "theme_color": THEME_COLOR,
+            "palette_commands": _palette_commands(registry),
         }
 
     app.jinja_env.filters["strip_tags"] = strip_tags
+
+
+def _palette_commands(registry: ContentRegistry) -> list[dict[str, str]]:
+    from flask import url_for
+
+    commands = [
+        {"label": "Open the investigation room", "href": url_for("pages.home"), "kind": "page"},
+        {"label": "Open all cases", "href": url_for("projects.index"), "kind": "page"},
+    ]
+    commands += [
+        {
+            "label": f"Open {p.case_label} {p.title}",
+            "href": url_for("projects.detail", slug=p.slug),
+            "kind": "case",
+        }
+        for p in registry.projects
+    ]
+    commands += [
+        {"label": "Open skills", "href": url_for("pages.skills"), "kind": "page"},
+        {"label": "Open timeline", "href": url_for("pages.timeline"), "kind": "page"},
+        {"label": "Search the archive", "href": url_for("search.search"), "kind": "page"},
+        {"label": "Contact", "href": url_for("pages.contact"), "kind": "page"},
+    ]
+    return commands
 
 
 def _tech_slug(registry: ContentRegistry, name: str) -> str:

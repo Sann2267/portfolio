@@ -1,7 +1,7 @@
 {% from "components/case_file.html" import case_card %}
 <p class="muted small results__count">
   {% if filters.active %}{{ projects|length }} of {{ total }} cases match{% else %}All {{ total }} cases{% endif %}
-  {% if filters.tech %} · technology <a href="{{ tech_href(filters.tech) }}">{{ filters.tech }}</a>{% endif %}
+  {% if filters.tech %} · technology <a href="{{ tech_href(filters.tech) }}">{{ tech_label }}</a>{% endif %}
 </p>
 {% if projects %}
 <div class="grid" data-count="{{ projects|length }}">

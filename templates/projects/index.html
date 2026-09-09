@@ -33,6 +33,14 @@
     {% if filters.active %}<a class="btn btn--ghost" href="{{ url_for('projects.index') }}">Clear</a>{% endif %}
   </div>
 </form>
+<nav class="quick-filters-nav" aria-label="Quick technology filters">
+  <span class="eyebrow">Quick filters</span>
+  <ul class="quick-filters">
+    {% for chip in quick_filters %}
+    <li><a class="badge{% if filters.tech and filters.tech|lower == chip.slug %} is-active{% endif %}" href="{{ url_for('projects.index', tech=chip.slug) }}" hx-get="{{ url_for('projects.index', tech=chip.slug) }}" hx-target="#case-grid" hx-push-url="true">{{ chip.name }} <span class="muted">{{ chip.count }}</span></a></li>
+    {% endfor %}
+  </ul>
+</nav>
 <div id="case-grid" aria-live="polite">
   {% include "partials/project_grid.html" %}
 </div>

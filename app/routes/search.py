@@ -20,7 +20,10 @@ def search():
     query = (request.args.get("q") or "").strip()[:MAX_QUERY]
     results = get_index(registry).search(query) if query else []
     context = {"query": query, "results": results}
-    if is_htmx(request) or request.args.get("partial") == "1":
+    partial = request.args.get("partial")
+    if partial == "palette":
+        return render_template("partials/palette_results.html", **context)
+    if is_htmx(request) or partial == "1":
         return render_template("partials/search_results.html", **context)
     meta = build_meta(
         current_app.config,

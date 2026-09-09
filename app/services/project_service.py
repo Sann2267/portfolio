@@ -107,13 +107,8 @@ def filter_projects(registry: ContentRegistry, filters: Filters) -> list[Project
         wanted = filters.category.casefold()
         projects = [p for p in projects if wanted == p.category or wanted in p.domains]
     if filters.tech:
-        tech = registry.taxonomy.resolve(filters.tech)
-        wanted = (tech.name if tech else filters.tech).casefold()
-        projects = [
-            p
-            for p in projects
-            if any(name.casefold() == wanted for name in p.technologies + p.aws_services)
-        ]
+        matching = {p.slug for p in registry.projects_for_technology(filters.tech)}
+        projects = [p for p in projects if p.slug in matching]
     if filters.status:
         projects = [p for p in projects if p.status == filters.status.casefold()]
     if filters.q:
@@ -124,6 +119,34 @@ def filter_projects(registry: ContentRegistry, filters: Filters) -> list[Project
             if any(needle in term.casefold() for term in [p.summary, *p.search_terms])
         ]
     return projects
+
+
+QUICK_FILTER_NAMES: tuple[str, ...] = (
+    "AWS",
+    "Python",
+    "Docker",
+    "Terraform",
+    "Kubernetes",
+    "Flask",
+    "FastAPI",
+    "Amazon EKS",
+    "AWS Lambda",
+    "GitHub Actions",
+    "MQTT",
+)
+
+
+def quick_filters(registry: ContentRegistry) -> list[dict[str, object]]:
+    """Technology chips for the case index: the spec's suggestions that at least one case uses."""
+    chips: list[dict[str, object]] = []
+    for name in QUICK_FILTER_NAMES:
+        tech = registry.taxonomy.resolve(name)
+        if tech is None:
+            continue
+        count = len(registry.projects_for_technology(tech.name))
+        if count:
+            chips.append({"name": tech.name, "slug": tech.slug, "count": count})
+    return chips
 
 
 def filter_options(registry: ContentRegistry, *, tech_limit: int = 24) -> dict[str, list]:

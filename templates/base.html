@@ -42,9 +42,12 @@
     <p class="footer__note muted small">Every case states what is documented, verified in code, implemented but undocumented, targeted, or planned. Built with Flask and Jinja; content is YAML and Markdown.</p>
   </div>
 </footer>
+{% from "components/overlays.html" import command_palette %}
+{{ command_palette(palette_commands, url_for('search.search')) }}
 {% block overlays %}{% endblock %}
 <script src="{{ static_url('js/vendor/htmx.min.js') }}" defer></script>
 <script src="{{ static_url('js/app.js') }}" defer></script>
+<script src="{{ static_url('js/palette.js') }}" defer></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

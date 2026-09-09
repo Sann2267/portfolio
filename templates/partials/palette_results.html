@@ -1,0 +1,11 @@
+{% for result in results[:8] %}
+<li class="palette__item" role="option" data-dynamic>
+  {% if result.kind == 'case' %}<a href="{{ case_href(result.key) }}">
+  {% elif result.kind == 'technology' %}<a href="{{ tech_href(result.key) }}">
+  {% else %}<a href="{{ url_for(result.key) }}">{% endif %}
+    <span>{{ result.title }}</span><span class="palette__kind">{{ result.subtitle }}</span>
+  </a>
+</li>
+{% else %}
+<li class="palette__empty" data-dynamic>No case, technology, or page matches <strong>{{ query }}</strong>.</li>
+{% endfor %}

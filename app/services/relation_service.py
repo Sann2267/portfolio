@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 
-from app.content.registry import ContentRegistry
+from app.content.registry import AWS_UMBRELLA, ContentRegistry
 from app.models.project import Project
 from app.models.taxonomy import Technology
 
@@ -28,12 +28,15 @@ def technology_view(registry: ContentRegistry, name: str) -> TechnologyView | No
     cases = registry.projects_for_technology(tech.name)
     if not cases:
         return None
+    umbrella = tech.name == AWS_UMBRELLA
     group_label = next(
         (g.label for g in registry.taxonomy.groups if g.id == tech.group), tech.group
     )
     counts: Counter[str] = Counter()
     for project in cases:
-        for other in project.technologies + project.aws_services:
+        for other in (
+            project.aws_services if umbrella else project.technologies + project.aws_services
+        ):
             if other != tech.name:
                 counts[other] += 1
 
