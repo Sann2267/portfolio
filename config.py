@@ -59,15 +59,11 @@ class ProductionConfig(BaseConfig):
 
     @classmethod
     def validate(cls) -> None:
-        missing = []
+        """SECRET_KEY is mandatory. A missing SITE_URL is tolerated: the app derives it from
+        the first request's host and logs a warning, so a fresh deployment never crashes."""
         if not os.environ.get("SECRET_KEY"):
-            missing.append("SECRET_KEY")
-        if not site_url_from_environment():
-            missing.append("SITE_URL")
-        if missing:
             raise RuntimeError(
-                "production configuration is incomplete; set the environment variables: "
-                + ", ".join(missing)
+                "production configuration is incomplete; set the environment variable: SECRET_KEY"
             )
 
 

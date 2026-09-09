@@ -94,8 +94,15 @@ def test_fake_project_renders_everywhere_without_template_changes(tmp_path):
 def test_production_config_requires_environment(monkeypatch):
     monkeypatch.delenv("SECRET_KEY", raising=False)
     monkeypatch.delenv("SITE_URL", raising=False)
-    with pytest.raises(RuntimeError, match="SECRET_KEY, SITE_URL"):
+    monkeypatch.delenv("VERCEL_PROJECT_PRODUCTION_URL", raising=False)
+    monkeypatch.delenv("VERCEL_URL", raising=False)
+    with pytest.raises(RuntimeError, match="SECRET_KEY"):
         create_app("production")
+
+    monkeypatch.setenv("SECRET_KEY", "z" * 32)
+    derived = create_app("production")  # no SITE_URL anywhere: derived from the request host
+    html = derived.test_client().get("/", base_url="https://cases.example").get_data(as_text=True)
+    assert '<link rel="canonical" href="https://cases.example/">' in html
 
     monkeypatch.setenv("SECRET_KEY", "x" * 32)
     monkeypatch.setenv("SITE_URL", "https://example.org/")
@@ -192,7 +199,14 @@ def test_sitemap_covers_every_public_route():
     app = create_app("testing")
     client = app.test_client()
     xml = client.get("/sitemap.xml").get_data(as_text=True)
-    excluded = {"static", "pages.healthz", "pages.robots", "pages.sitemap", "search.search"}
+    excluded = {
+        "static",
+        "pages.healthz",
+        "pages.robots",
+        "pages.sitemap",
+        "pages.favicon",
+        "search.search",
+    }
     for rule in app.url_map.iter_rules():
         if rule.arguments or rule.endpoint in excluded or "GET" not in rule.methods:
             continue

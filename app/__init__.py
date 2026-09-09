@@ -64,6 +64,11 @@ def create_app(
     site_url = site_url_from_environment()
     if site_url:
         app.config["SITE_URL"] = site_url
+    elif config is ProductionConfig:
+        app.config["SITE_URL_FROM_REQUEST"] = True
+        app.logger.warning(
+            "SITE_URL is not set; canonical URLs will use the host of the first request"
+        )
     if config.TESTING:
         app.config["SITE_URL"] = config.SITE_URL  # tests never depend on the shell environment
     if content_dir is not None:
@@ -220,6 +225,12 @@ def _tech_slug(registry: ContentRegistry, name: str) -> str:
 
 
 def _register_headers(app: Flask) -> None:
+    @app.before_request
+    def derive_site_url() -> None:
+        if app.config.get("SITE_URL_FROM_REQUEST"):
+            app.config["SITE_URL"] = request.url_root.rstrip("/")
+            app.config["SITE_URL_FROM_REQUEST"] = False
+
     @app.after_request
     def security_headers(response):
         if not app.config.get("SECURITY_HEADERS", True):

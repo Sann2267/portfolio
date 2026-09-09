@@ -2,7 +2,16 @@
 
 from __future__ import annotations
 
-from flask import Blueprint, Response, current_app, jsonify, render_template, request, url_for
+from flask import (
+    Blueprint,
+    Response,
+    current_app,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 
 from app import get_registry
 from app.services.project_service import system_lines
@@ -81,6 +90,12 @@ def contact():
 def healthz():
     registry = get_registry()
     return jsonify({"status": "ok", "cases": len(registry.projects)})
+
+
+@bp.get("/favicon.ico")
+def favicon():
+    """Browsers request this path on their own; the real icon is the SVG in static/."""
+    return redirect(url_for("static", filename="icons/favicon.svg"), code=302)
 
 
 @bp.get("/robots.txt")
