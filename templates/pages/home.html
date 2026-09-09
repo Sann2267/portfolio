@@ -38,6 +38,7 @@
       {{ case_card(project, case_href(project.slug), category_label(project.category), tech_href=tech_href, animate=loop.index0 % 4 + 1) }}
       {% endfor %}
     </div>
+    <p class="board__status mono small" data-board-status aria-live="polite"></p>
   </section>
 
   <aside class="room__monitor" aria-labelledby="monitor-title">

@@ -1,1 +1,126 @@
-/* Home page composition (investigation room). Filled in Phase 05. */
+/* Home page composition: investigator dossier, investigation board, system monitor, desk.
+   Desktop: full room. Tablet: dossier + monitor row, board below. Mobile: vertical dashboard. */
+
+.room {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "dossier"
+    "monitor"
+    "board"
+    "desk";
+  padding-block: var(--space-5) var(--space-6);
+}
+
+.room__dossier { grid-area: dossier; }
+.room__board { grid-area: board; min-width: 0; }
+.room__monitor { grid-area: monitor; }
+.room__desk { grid-area: desk; }
+
+@media (min-width: 48rem) {
+  .room {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    grid-template-areas:
+      "dossier monitor"
+      "board board"
+      "desk desk";
+  }
+}
+
+@media (min-width: 72rem) {
+  .room {
+    grid-template-columns: minmax(19rem, 23rem) minmax(0, 1fr) minmax(13rem, 15rem);
+    grid-template-areas:
+      "dossier board monitor"
+      "desk board monitor";
+    align-items: start;
+  }
+
+  .room__dossier {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-4));
+  }
+}
+
+/* ---- dossier -------------------------------------------------------------------- */
+
+.dossier__name { font-size: var(--text-2xl); margin-bottom: var(--space-1); }
+.dossier__headline { margin-bottom: var(--space-4); }
+
+.dossier__meta {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: 1px dashed var(--color-border);
+  border-bottom: 1px dashed var(--color-border);
+  font-size: var(--text-xs);
+}
+
+.dossier__meta div { display: flex; gap: var(--space-3); }
+.dossier__meta dt { min-width: 5.5rem; color: var(--color-text-muted); letter-spacing: var(--tracking-wide); text-transform: uppercase; }
+.dossier__meta dd { margin: 0; color: var(--color-text-primary); }
+
+.dossier__focus {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-4);
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.dossier__focus li { display: flex; gap: var(--space-2); }
+.dossier__focus li::before { content: "\25B8"; color: var(--color-accent-active); }
+
+.dossier__intro { margin-bottom: var(--space-4); }
+.dossier__intro p { font-size: var(--text-sm); }
+
+/* ---- board ---------------------------------------------------------------------- */
+
+.room__board .section__head { flex-wrap: wrap; }
+.board__hint { margin: 0; flex-basis: 100%; }
+
+.board__status {
+  margin: var(--space-2) 0 0;
+  min-height: 1.5em;
+  color: var(--color-text-muted);
+}
+
+.board__status strong { color: var(--color-accent-active); font-weight: 600; }
+
+@media (min-width: 72rem) {
+  .room__board .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 100rem) {
+  .room__board .board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* ---- monitor -------------------------------------------------------------------- */
+
+.monitor {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+@media (min-width: 72rem) {
+  .monitor { grid-template-columns: minmax(0, 1fr); }
+}
+
+.monitor__tile { text-decoration: none; }
+.monitor__tile .metric { height: 100%; transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease); }
+.monitor__tile:hover .metric,
+.monitor__tile:focus-visible .metric { border-color: var(--color-accent-active); background: var(--color-surface-elevated); }
+
+/* ---- desk: terminal lines type in one after another ------------------------------- */
+
+.room__desk .terminal__line { animation: reveal var(--dur-base) var(--ease-out) both; }
+.room__desk .terminal__line:nth-child(1) { animation-delay: 200ms; }
+.room__desk .terminal__line:nth-child(2) { animation-delay: 500ms; }
+.room__desk .terminal__line:nth-child(3) { animation-delay: 800ms; }
+.room__desk .terminal__line:nth-child(4) { animation-delay: 1100ms; }
+.room__desk .terminal__line:nth-child(5) { animation-delay: 1400ms; }
