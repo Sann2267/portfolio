@@ -1,0 +1,34 @@
+# ---- Python ----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# ---- environment and secrets ----------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+
+# ---- deployment -------------------------------------------------------------
+.vercel/
+
+# ---- editor / OS ------------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- source material (competition modules are not published) -------------
+docs/sources/*
+!docs/sources/README.md
+
+# ---- generated / scratch ----------------------------------------------------
+*.log
+tmp/
