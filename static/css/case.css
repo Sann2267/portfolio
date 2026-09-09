@@ -1,1 +1,174 @@
-/* Case file layout and architecture diagram. Filled in Phases 06 and 07. */
+/* Case file layout. One renderer for every case; sections render only when they have content.
+   Desktop: sticky section nav beside the body. Mobile: header, horizontal section pills, body. */
+
+.case {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "head"
+    "nav"
+    "body";
+  padding-block: var(--space-5) var(--space-6);
+}
+
+.case__head { grid-area: head; }
+.case__nav { grid-area: nav; }
+.case__body { grid-area: body; min-width: 0; }
+
+@media (min-width: 64rem) {
+  .case {
+    grid-template-columns: 14rem minmax(0, 1fr);
+    grid-template-areas:
+      "head head"
+      "nav body";
+    column-gap: var(--space-7);
+    align-items: start;
+  }
+
+  .case__nav {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-4));
+  }
+}
+
+/* ---- header: the case file cover --------------------------------------------------- */
+
+.case__head {
+  position: relative;
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, var(--tint-active), transparent 40%),
+    linear-gradient(180deg, var(--color-surface-elevated), var(--color-surface));
+  box-shadow: var(--shadow-md);
+}
+
+.case__head::before {
+  content: "";
+  position: absolute;
+  inset: var(--space-3);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  pointer-events: none;
+}
+
+.case__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.case__id { color: var(--color-accent-active); letter-spacing: var(--tracking-wider); font-weight: 600; }
+.case__category { text-decoration: none; padding: 0.1em 0.5em; border: 1px solid var(--color-border-strong); border-radius: var(--radius-pill); }
+.case__type { text-transform: none; letter-spacing: 0; color: var(--color-text-muted); }
+
+.case__title { font-size: var(--text-3xl); margin-bottom: var(--space-3); }
+.case__summary { max-width: var(--measure); font-size: var(--text-md); margin-bottom: var(--space-4); }
+
+.case__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  gap: var(--space-3) var(--space-5);
+  margin: 0;
+  padding-top: var(--space-4);
+  border-top: 1px dashed var(--color-border);
+  font-size: var(--text-sm);
+}
+
+.case__facts div { display: grid; gap: var(--space-1); }
+.case__facts dt { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--color-text-muted); }
+.case__facts dd { margin: 0; color: var(--color-text-secondary); }
+.case__facts dd.cluster { gap: var(--space-1); }
+
+/* ---- section navigation ------------------------------------------------------------ */
+
+.case__nav ol {
+  display: flex;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0 0 var(--space-1);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.case__nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.case__nav a:hover,
+.case__nav a:focus-visible { border-color: var(--color-accent-active); color: var(--color-text-primary); }
+.case__nav a .mono { color: var(--color-accent-active); font-size: var(--text-xs); }
+
+@media (min-width: 64rem) {
+  .case__nav ol { flex-direction: column; gap: 0; overflow: visible; }
+
+  .case__nav a {
+    width: 100%;
+    border: 0;
+    border-left: 2px solid var(--color-border);
+    border-radius: 0;
+    background: transparent;
+    padding-block: var(--space-2);
+  }
+
+  .case__nav a:hover,
+  .case__nav a:focus-visible { border-left-color: var(--color-accent-active); background: var(--tint-muted); }
+}
+
+/* ---- body ---------------------------------------------------------------------------- */
+
+.case__section:first-child { padding-top: 0; border-top: 0; }
+.case__section { scroll-margin-top: calc(var(--nav-height) + var(--space-4)); }
+.case__section .eyebrow { margin: var(--space-4) 0 var(--space-2); }
+.case__section .eyebrow:first-child { margin-top: 0; }
+
+.breakdown { display: grid; gap: var(--space-5); }
+.breakdown__part { padding-left: var(--space-4); border-left: 2px solid var(--color-border); }
+.breakdown__title { margin: 0 0 var(--space-2); }
+.breakdown__title .eyebrow { margin: 0; color: var(--color-accent-active); }
+
+.stack-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+  gap: var(--space-4);
+}
+
+.stack-group .eyebrow { margin: 0 0 var(--space-2); }
+
+.related { display: grid; gap: var(--space-2); }
+.related__shared { margin: 0; }
+
+.evidence-grid { --grid-min: 16rem; }
+
+/* ---- architecture: readable static representation --------------------------------- */
+
+.arch-static { display: grid; gap: var(--space-4); }
+.arch-static__group { padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); }
+.arch-static__label { margin: 0 0 var(--space-2); font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--color-accent-active); }
+.arch-static__nodes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr)); gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.arch-static__node { display: grid; gap: var(--space-1); align-content: start; padding: var(--space-2) var(--space-3); border-left: 2px solid var(--color-border-strong); }
+.arch-static__node[data-status="planned"] { border-left-style: dashed; opacity: 0.85; }
+.arch-static__node[data-status="external"] { border-left-color: var(--color-text-muted); }
+.arch-static__node p { margin: 0; }
+.arch-static__edges { columns: 2 18rem; column-gap: var(--space-5); margin: 0; padding: 0 0 0 1.2em; }
+.arch-static__edges li { break-inside: avoid; margin-bottom: var(--space-1); }

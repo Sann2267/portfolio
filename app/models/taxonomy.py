@@ -6,7 +6,7 @@ from functools import cached_property
 
 from pydantic import ConfigDict, Field, model_validator
 
-from app.models.common import ContentModel
+from app.models.common import ContentModel, slugify
 
 
 class Category(ContentModel):
@@ -25,6 +25,10 @@ class Technology(ContentModel):
     group: str
     aliases: list[str] = []
     url: str | None = None
+
+    @property
+    def slug(self) -> str:
+        return slugify(self.name)
 
 
 class Taxonomy(ContentModel):
@@ -65,11 +69,13 @@ class Taxonomy(ContentModel):
         for tech in self.technologies:
             for key in (tech.name, *tech.aliases):
                 table[key.casefold()] = tech
+                table[slugify(key)] = tech
         return table
 
     def resolve(self, name: str) -> Technology | None:
-        """Return the canonical technology for a name or alias, or None."""
-        return self._lookup.get(name.strip().casefold())
+        """Return the canonical technology for a name, alias, or slug, or None."""
+        key = name.strip().casefold()
+        return self._lookup.get(key) or self._lookup.get(slugify(key))
 
     def category(self, category_id: str) -> Category | None:
         return next((c for c in self.categories if c.id == category_id), None)

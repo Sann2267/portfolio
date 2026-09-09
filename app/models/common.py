@@ -28,6 +28,14 @@ CLAIM_BASIS_LABELS: dict[str, str] = {
     "not_documented": "Not documented",
 }
 
+_SLUG_STRIP = re.compile(r"[^a-z0-9]+")
+
+
+def slugify(value: str) -> str:
+    """URL slug: lowercase, non-alphanumerics collapsed to single hyphens."""
+    return _SLUG_STRIP.sub("-", value.casefold()).strip("-")
+
+
 _DATE_PATTERNS = {
     "day": re.compile(r"^\d{4}-\d{2}-\d{2}$"),
     "month": re.compile(r"^\d{4}-\d{2}$"),

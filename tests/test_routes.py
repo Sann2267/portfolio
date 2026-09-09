@@ -78,12 +78,13 @@ def test_500_renders_the_interrupted_page():
 
 
 def test_technology_pages(client):
-    response = client.get("/technologies/Kubernetes")
+    response = client.get("/technologies/kubernetes")
     assert response.status_code == 200
     html = response.get_data(as_text=True)
     assert "multi-tenant-saas-infrastructure" in html
     assert "Seen alongside" in html
     assert client.get("/technologies/Lambda").status_code == 200  # alias resolves
+    assert client.get("/technologies/aws-lambda").status_code == 200  # slug resolves
     assert client.get("/technologies/Cobol").status_code == 404
 
 

@@ -43,7 +43,7 @@ def test_board_lists_every_case_with_relationship_data(home):
     connectors = re.findall(r'class="board__line" data-from="([^"]+)" data-to="([^"]+)"', html)
     assert connectors == board_links(registry)
     assert len(connectors) >= 5
-    assert 'data-board-status' in html
+    assert "data-board-status" in html
 
 
 def test_cards_are_plain_links_not_a_puzzle(home):

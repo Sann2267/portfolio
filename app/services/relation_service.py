@@ -9,6 +9,8 @@ from app.content.registry import ContentRegistry
 from app.models.project import Project
 from app.models.taxonomy import Technology
 
+MAX_RELATED_TECHNOLOGIES = 48
+
 
 @dataclass(frozen=True)
 class TechnologyView:
@@ -34,7 +36,13 @@ def technology_view(registry: ContentRegistry, name: str) -> TechnologyView | No
         for other in project.technologies + project.aws_services:
             if other != tech.name:
                 counts[other] += 1
-    related = tuple(sorted(counts.items(), key=lambda kv: (-kv[1], kv[0].casefold()))[:12])
+
+    def rank(item: tuple[str, int]) -> tuple[int, int, str]:
+        other = registry.taxonomy.resolve(item[0])
+        same_group = 0 if other and other.group == tech.group else 1
+        return (-item[1], same_group, item[0].casefold())
+
+    related = tuple(sorted(counts.items(), key=rank)[:MAX_RELATED_TECHNOLOGIES])
     return TechnologyView(tech, group_label, cases, related)
 
 

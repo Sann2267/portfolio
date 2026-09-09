@@ -163,7 +163,9 @@ def _register_context(app: Flask) -> None:
             ],
             "current_nav": current,
             "static_url": static_url,
-            "tech_href": lambda name: url_for("projects.technology", name=name),
+            "tech_href": lambda name: url_for(
+                "projects.technology", name=_tech_slug(registry, name)
+            ),
             "category_label": lambda category_id: category_label(registry.taxonomy, category_id),
             "case_href": lambda slug: url_for("projects.detail", slug=slug),
             "registry_stats": registry.stats(),
@@ -172,6 +174,13 @@ def _register_context(app: Flask) -> None:
         }
 
     app.jinja_env.filters["strip_tags"] = strip_tags
+
+
+def _tech_slug(registry: ContentRegistry, name: str) -> str:
+    from app.models.common import slugify
+
+    tech = registry.taxonomy.resolve(name)
+    return tech.slug if tech else slugify(name)
 
 
 def _register_headers(app: Flask) -> None:
