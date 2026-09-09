@@ -4,9 +4,20 @@ version = "0.1.0"
 description = "Python-first interactive detective-room portfolio: cloud, DevOps, backend, data, and IoT case files"
 requires-python = ">=3.12"
 readme = "README.md"
+# Keep in sync with requirements.txt (a test enforces it). Vercel installs from this list when
+# a pyproject.toml exists; pip and Docker use requirements.txt.
+dependencies = [
+    "Flask>=3.1.0",
+    "Jinja2>=3.1.4",
+    "PyYAML>=6.0.2",
+    "pydantic>=2.9.0",
+    "Markdown>=3.7",
+    "python-dotenv>=1.0.1",
+    "gunicorn>=23.0.0",
+]
 
 [tool.vercel]
-# Vercel's Python runtime detects Flask from requirements.txt; the entry point is
+# Vercel's Python runtime detects Flask from the dependencies; the entry point is
 # declared here rather than through an api/index.py rewrite (see docs/ARCHITECTURE.md).
 entrypoint = "wsgi:app"
 

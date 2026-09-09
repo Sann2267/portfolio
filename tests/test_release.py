@@ -213,6 +213,21 @@ def test_sitemap_covers_every_public_route():
         assert f"<loc>https://example.test{rule.rule}</loc>" in xml, rule.rule
 
 
+def test_pyproject_and_requirements_declare_the_same_runtime_dependencies():
+    """Vercel installs from pyproject.toml when it exists; pip and Docker use requirements.txt."""
+    import tomllib
+
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    declared = sorted(d.lower().replace(" ", "") for d in pyproject["project"]["dependencies"])
+    pinned = sorted(
+        line.strip().lower().replace(" ", "")
+        for line in (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.startswith("#")
+    )
+    assert declared == pinned
+    assert any(d.startswith("flask") for d in declared)
+
+
 def test_release_files_are_in_place():
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
     assert (
