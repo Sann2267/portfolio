@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "components/badges.html" import status_indicator, evidence_tag, badge_list %}
+{% from "components/links.html" import link_or_state %}
+{% block body_class %}page-case{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ static_url('css/case.css') }}">{% endblock %}
+{% block content %}
+<article class="case" data-slug="{{ project.slug }}">
+  <header class="case__head reveal">
+    <div class="case__meta mono">
+      <span class="case__id">{{ project.case_label }}</span>
+      {{ status_indicator(project.status) }}
+      <a class="case__category" href="{{ url_for('projects.index', category=project.category) }}">{{ category_label(project.category) }}</a>
+      <span class="case__type">{{ project.project_type }}</span>
+    </div>
+    <h1 class="case__title">{{ project.title }}</h1>
+    <p class="case__summary secondary">{{ project.summary }}</p>
+    <dl class="case__facts">
+      {% if project.role %}<div><dt>Role</dt><dd>{{ project.role }}</dd></div>{% endif %}
+      {% if project.context %}<div><dt>Context</dt><dd>{{ project.context }}</dd></div>{% endif %}
+      {% if project.period %}<div><dt>Period</dt><dd class="mono">{{ project.period.start }}{% if project.period.end and project.period.end != project.period.start %} → {{ project.period.end }}{% elif not project.period.end %} → ongoing{% endif %}{% if project.period.source %} <span class="muted">({{ project.period.source }})</span>{% endif %}</dd></div>{% endif %}
+      <div><dt>Evidence</dt><dd class="cluster">{% for kind in project.evidence_kinds %}{{ evidence_tag(kind) }}{% endfor %}</dd></div>
+    </dl>
+  </header>
+
+  <nav class="case__nav" aria-label="Case sections">
+    <ol>
+      {% for section in sections %}<li><a href="#{{ section.key }}"><span class="mono">{{ section.index }}</span> {{ section.title }}</a></li>{% endfor %}
+    </ol>
+  </nav>
+
+  <div class="case__body">
+    {% for section in sections %}
+    <section class="section case__section" id="{{ section.key }}" aria-labelledby="{{ section.key }}-title">
+      <div class="section__head">
+        <span class="section__index">{{ section.index }}</span>
+        <h2 id="{{ section.key }}-title">{{ section.title }}</h2>
+      </div>
+      {% include "projects/sections/" ~ section.key ~ ".html" %}
+    </section>
+    {% endfor %}
+  </div>
+</article>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="case case--error panel panel--elevated">
+  <p class="case__meta mono"><span class="case__id">INVESTIGATION INTERRUPTED</span> <span class="status status--danger">500</span></p>
+  <h1>Something failed on the server</h1>
+  <p class="secondary">The request could not be completed. Nothing you did caused it; try again in a moment.</p>
+  {% if detail %}<pre class="small">{{ detail }}</pre>{% endif %}
+  <div class="cluster">
+    <a class="btn btn--primary" href="{{ url_for('pages.home') }}">Back to the room</a>
+  </div>
+</article>
+{% endblock %}

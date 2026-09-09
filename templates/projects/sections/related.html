@@ -1,0 +1,11 @@
+{% from "components/case_file.html" import case_card %}
+<div class="grid" data-grid-min="16rem">
+  {% for item in related %}
+  <div class="related">
+    {{ case_card(item.project, case_href(item.project.slug), category_label(item.project.category), tech_limit=3, compact=True, tech_href=tech_href) }}
+    {% if item.shared_technologies or item.shared_services %}
+    <p class="small muted related__shared">Shares {{ (item.shared_technologies + item.shared_services)|join(', ') }}</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>

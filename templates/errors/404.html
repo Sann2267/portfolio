@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="case case--error panel panel--elevated">
+  <p class="case__meta mono"><span class="case__id">CASE NOT FOUND</span> <span class="status status--danger">404</span></p>
+  <h1>No file at this location</h1>
+  <p class="secondary">The path <code>{{ path }}</code> is not in the archive. It may have been renamed, or the reference was mistyped.</p>
+  <div class="cluster">
+    <a class="btn btn--primary" href="{{ url_for('projects.index') }}">Browse the case files</a>
+    <a class="btn" href="{{ url_for('search.search') }}">Search the archive</a>
+    <a class="btn btn--ghost" href="{{ url_for('pages.home') }}">Back to the room</a>
+  </div>
+</article>
+{% endblock %}

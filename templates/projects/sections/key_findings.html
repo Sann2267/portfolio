@@ -1,0 +1,6 @@
+{% from "components/badges.html" import claim_list %}
+{% if project.highlights %}
+<h3 class="eyebrow">Engineering decisions</h3>
+{{ claim_list(project.highlights) }}
+{% endif %}
+{% if project.body.key_findings %}<div class="prose">{{ project.body.key_findings|safe }}</div>{% endif %}

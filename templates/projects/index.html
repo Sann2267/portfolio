@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow eyebrow--active">Case files</p>
+  <h1>Cases</h1>
+  <p class="secondary measure">{{ total }} cases across cloud, DevOps, backend, data, and IoT. Filter by category, technology, or status; every filter is a plain link you can share.</p>
+</header>
+<form class="filters" method="get" action="{{ url_for('projects.index') }}"
+      hx-get="{{ url_for('projects.index') }}" hx-target="#case-grid" hx-trigger="change, submit, input changed delay:300ms from:#filter-q" hx-push-url="true">
+  <label class="field"><span>Category</span>
+    <select name="category">
+      <option value="">All</option>
+      {% for category in options.categories %}<option value="{{ category.id }}"{% if filters.category == category.id %} selected{% endif %}>{{ category.label }} ({{ category.count }})</option>{% endfor %}
+    </select>
+  </label>
+  <label class="field"><span>Technology</span>
+    <select name="tech">
+      <option value="">All</option>
+      {% for tech in options.technologies %}<option value="{{ tech.name }}"{% if filters.tech and filters.tech|lower == tech.name|lower %} selected{% endif %}>{{ tech.name }} ({{ tech.count }})</option>{% endfor %}
+    </select>
+  </label>
+  <label class="field"><span>Status</span>
+    <select name="status">
+      <option value="">All</option>
+      {% for status in options.statuses %}<option value="{{ status.id }}"{% if filters.status == status.id %} selected{% endif %}>{{ status.label }} ({{ status.count }})</option>{% endfor %}
+    </select>
+  </label>
+  <label class="field"><span>Keyword</span>
+    <input id="filter-q" name="q" type="search" value="{{ filters.q or '' }}" placeholder="title, service, node…">
+  </label>
+  <div class="cluster">
+    <button class="btn btn--primary" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-filter"/></svg> Apply</button>
+    {% if filters.active %}<a class="btn btn--ghost" href="{{ url_for('projects.index') }}">Clear</a>{% endif %}
+  </div>
+</form>
+<div id="case-grid" aria-live="polite">
+  {% include "partials/project_grid.html" %}
+</div>
+{% endblock %}

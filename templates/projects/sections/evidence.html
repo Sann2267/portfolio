@@ -1,0 +1,6 @@
+{% from "components/case_file.html" import evidence_card %}
+<div class="grid evidence-grid" data-grid-min="16rem">
+  {% for item in project.evidence + project.gallery %}
+  {{ evidence_card(item, static_url=static_url) }}
+  {% endfor %}
+</div>

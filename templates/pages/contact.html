@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow eyebrow--active">Communication</p>
+  <h1>Contact</h1>
+  <p class="secondary measure">No form, no tracking. Pick a channel.</p>
+</header>
+<div class="grid" data-grid-min="16rem">
+  {% for contact in profile.contacts %}
+  <article class="panel contact">
+    <p class="panel__title">{{ contact.label }}</p>
+    <p class="contact__value">
+      <a href="{{ contact.url }}"{% if contact.kind != 'email' %} rel="noopener noreferrer" target="_blank"{% endif %}>
+        <svg class="icon" aria-hidden="true"><use href="#i-{{ 'mail' if contact.kind == 'email' else ('github' if contact.kind == 'github' else 'external') }}"/></svg>
+        {{ contact.value or contact.url }}
+      </a>
+    </p>
+  </article>
+  {% endfor %}
+</div>
+<section class="section">
+  <div class="section__head"><span class="section__index">Note</span><h2>What to expect</h2></div>
+  <div class="prose">
+    <p>{{ profile.name }} works on {{ profile.focus|join(', ')|lower }}. Languages: {{ profile.languages|join(' and ') }}.</p>
+    <p>The <a href="{{ url_for('projects.index') }}">case files</a> show what has been built and on what evidence; the <a href="{{ url_for('pages.skills') }}">skills page</a> maps each capability to those cases.</p>
+  </div>
+</section>
+{% endblock %}

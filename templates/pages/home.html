@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "components/case_file.html" import case_card %}
+{% from "components/panels.html" import terminal_panel, metric_card %}
+{% block body_class %}page-room{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ static_url('css/room.css') }}">{% endblock %}
+{% block content %}
+<div class="room">
+  <section class="room__dossier panel panel--elevated reveal" aria-labelledby="dossier-title">
+    <p class="eyebrow eyebrow--active">Investigator dossier</p>
+    <h1 id="dossier-title" class="dossier__name">{{ profile.name }}</h1>
+    <p class="dossier__headline secondary">{{ profile.headline }}</p>
+    <dl class="dossier__meta mono">
+      <div><dt>Handle</dt><dd>@{{ profile.handle }}</dd></div>
+      <div><dt>Location</dt><dd>{{ profile.location or 'Not documented' }}</dd></div>
+      <div><dt>Cases</dt><dd>{{ '%02d'|format(projects|length) }} on file</dd></div>
+    </dl>
+    <ul class="dossier__focus">
+      {% for item in profile.focus %}<li>{{ item }}</li>{% endfor %}
+    </ul>
+    <div class="prose dossier__intro">{{ profile.intro|safe }}</div>
+    <div class="cluster">
+      <a class="btn btn--primary" href="{{ url_for('projects.index') }}">Open the case files <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a class="btn" href="{{ url_for('pages.contact') }}">Contact</a>
+    </div>
+  </section>
+
+  <section class="room__board" aria-labelledby="board-title">
+    <div class="section__head">
+      <span class="section__index">Board</span>
+      <h2 id="board-title">Investigation board</h2>
+      <p class="muted small board__hint">Hover or focus a case to light up the cases that share its technologies.</p>
+    </div>
+    <div class="board" data-board>
+      <svg class="board__lines" aria-hidden="true" data-board-lines>
+        {% for a, b in links %}<path class="board__line" data-from="{{ a }}" data-to="{{ b }}" d="M0 0"/>{% endfor %}
+      </svg>
+      {% for project in projects %}
+      {{ case_card(project, case_href(project.slug), category_label(project.category), tech_href=tech_href, animate=loop.index0 % 4 + 1) }}
+      {% endfor %}
+    </div>
+  </section>
+
+  <aside class="room__monitor" aria-labelledby="monitor-title">
+    <p class="panel__title" id="monitor-title">System monitor</p>
+    <div class="monitor">
+      {% for category in categories if counts.get(category.id) %}
+      <a class="monitor__tile" href="{{ url_for('projects.index', category=category.id) }}">
+        {{ metric_card(category.label, '%02d'|format(counts[category.id]), note='case' if counts[category.id] == 1 else 'cases', tone='active' if loop.first else None) }}
+      </a>
+      {% endfor %}
+    </div>
+    <p class="muted small">Counts include cases where the domain is secondary.</p>
+  </aside>
+
+  <section class="room__desk" aria-label="Technical notes">
+    {{ terminal_panel(terminal, title="case-room.log", typing=True) }}
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ static_url('js/room.js') }}" defer></script>{% endblock %}

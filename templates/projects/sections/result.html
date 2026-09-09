@@ -1,0 +1,14 @@
+{% from "components/badges.html" import claim_list %}
+{% if project.body.result %}<div class="prose">{{ project.body.result|safe }}</div>{% endif %}
+{% if project.results %}
+<h3 class="eyebrow">Outcomes on record</h3>
+{{ claim_list(project.results) }}
+{% endif %}
+{% if project.targets %}
+<h3 class="eyebrow">Targets from the specification</h3>
+{{ claim_list(project.targets) }}
+{% endif %}
+{% if project.future_work %}
+<h3 class="eyebrow">Planned, not built</h3>
+{{ claim_list(project.future_work) }}
+{% endif %}

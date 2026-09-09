@@ -1,0 +1,15 @@
+{% from "components/badges.html" import claim_list %}
+<div class="two-col">
+  {% if project.challenges %}
+  <div class="panel">
+    <p class="panel__title">Challenges</p>
+    {{ claim_list(project.challenges) }}
+  </div>
+  {% endif %}
+  {% if project.solutions %}
+  <div class="panel">
+    <p class="panel__title">Solutions</p>
+    {{ claim_list(project.solutions) }}
+  </div>
+  {% endif %}
+</div>

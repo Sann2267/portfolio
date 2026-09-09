@@ -1,0 +1,11 @@
+{% from "components/badges.html" import tech_badge %}
+<div class="stack-groups">
+  {% for label, names in stack %}
+  <div class="stack-group">
+    <p class="eyebrow">{{ label }}</p>
+    <ul class="badge-list">
+      {% for name in names %}<li>{{ tech_badge(name, href=tech_href(name), aws=(name in project.aws_services)) }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</div>

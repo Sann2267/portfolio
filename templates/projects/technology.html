@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "components/case_file.html" import case_card %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow eyebrow--active">Technology · {{ view.group_label }}</p>
+  <h1>{{ view.technology.name }}</h1>
+  <p class="secondary measure">Appears in {{ view.cases|length }} case{{ '' if view.cases|length == 1 else 's' }}.{% if view.technology.aliases %} Also written as {{ view.technology.aliases|join(', ') }}.{% endif %}</p>
+</header>
+<section class="section">
+  <div class="section__head"><span class="section__index">Cases</span><h2>Where it appears</h2></div>
+  <div class="grid">
+    {% for project in view.cases %}
+    {{ case_card(project, case_href(project.slug), category_label(project.category), tech_href=tech_href) }}
+    {% endfor %}
+  </div>
+</section>
+{% if view.related_technologies %}
+<section class="section">
+  <div class="section__head"><span class="section__index">Related</span><h2>Seen alongside</h2></div>
+  <ul class="badge-list">
+    {% for name, count in view.related_technologies %}
+    <li><a class="badge" href="{{ tech_href(name) }}">{{ name }} <span class="muted">×{{ count }}</span></a></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

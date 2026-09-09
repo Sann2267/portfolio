@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "components/timeline.html" import timeline_node %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow eyebrow--active">Chronology</p>
+  <h1>Timeline</h1>
+  <p class="secondary measure">Dated from repositories, module documents, and the author's own notes. Events that only the author can vouch for carry a label.</p>
+</header>
+<ol class="timeline">
+  {% for event in events %}
+  {% set project = registry_case(event.project) if event.project else None %}
+  {{ timeline_node(event, case_title=project.title if project else None, case_href=case_href(project.slug) if project else None) }}
+  {% endfor %}
+</ol>
+{% endblock %}

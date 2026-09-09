@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "components/badges.html" import tech_badge %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow eyebrow--active">Capabilities</p>
+  <h1>Skills</h1>
+  <p class="secondary measure">Each skill lists the cases that demonstrate it. Nothing here is self-rated: a skill without a case does not appear.</p>
+</header>
+<div class="stack stack-lg">
+  {% for entry in groups %}
+  <section class="section" id="skills-{{ entry.group.id }}" aria-labelledby="skills-{{ entry.group.id }}-title">
+    <div class="section__head">
+      <span class="section__index">{{ '%02d'|format(loop.index) }}</span>
+      <h2 id="skills-{{ entry.group.id }}-title">{{ entry.group.label }}</h2>
+      {% if entry.group.category %}<a class="badge" href="{{ url_for('projects.index', category=entry.group.category) }}">{{ category_label(entry.group.category) }} cases</a>{% endif %}
+    </div>
+    <div class="grid">
+      {% for item in entry.skills %}
+      <article class="panel skill">
+        <h3 class="skill__name">{{ item.skill.name }}</h3>
+        <ul class="badge-list">
+          {% for name in item.skill.technologies %}<li>{{ tech_badge(name, href=tech_href(name)) }}</li>{% endfor %}
+        </ul>
+        {% if item.skill.note %}<p class="small secondary">{{ item.skill.note }}</p>{% endif %}
+        <p class="skill__cases small">
+          <span class="eyebrow">Evidence</span>
+          {% for project in item.cases %}<a href="{{ case_href(project.slug) }}">{{ project.case_label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+        </p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

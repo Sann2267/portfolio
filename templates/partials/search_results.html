@@ -1,0 +1,28 @@
+{% if query %}
+<p class="muted small results__count">{{ results|length }} result{{ '' if results|length == 1 else 's' }} for <strong>{{ query }}</strong></p>
+{% endif %}
+{% if results %}
+<ol class="results">
+  {% for result in results %}
+  <li class="result" data-kind="{{ result.kind }}">
+    <p class="eyebrow">{{ result.subtitle }}</p>
+    <h2 class="result__title">
+      {% if result.kind == 'case' %}<a href="{{ case_href(result.key) }}">{{ result.title }}</a>
+      {% elif result.kind == 'technology' %}<a href="{{ tech_href(result.key) }}">{{ result.title }}</a>
+      {% else %}<a href="{{ url_for(result.key) }}">{{ result.title }}</a>{% endif %}
+    </h2>
+    {% if result.snippet %}<p class="result__snippet">{{ result.snippet }}</p>{% endif %}
+  </li>
+  {% endfor %}
+</ol>
+{% elif query %}
+<div class="empty">
+  <p class="eyebrow">No evidence found</p>
+  <p>Nothing matches <strong>{{ query }}</strong>. Try a technology name such as <a href="{{ url_for('search.search', q='lambda') }}">lambda</a>, a category such as <a href="{{ url_for('search.search', q='iot') }}">iot</a>, or browse <a href="{{ url_for('projects.index') }}">all cases</a>.</p>
+</div>
+{% else %}
+<div class="empty">
+  <p class="eyebrow">Ready</p>
+  <p>Type to search. Try <a href="{{ url_for('search.search', q='kubernetes') }}">kubernetes</a>, <a href="{{ url_for('search.search', q='step functions') }}">step functions</a>, or <a href="{{ url_for('search.search', q='mqtt') }}">mqtt</a>.</p>
+</div>
+{% endif %}

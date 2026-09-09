@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ meta.full_title }}</title>
+  <meta name="description" content="{{ meta.description }}">
+  {% if meta.robots %}<meta name="robots" content="{{ meta.robots }}">{% endif %}
+  <link rel="canonical" href="{{ meta.canonical }}">
+  <meta property="og:type" content="{{ meta.og_type }}">
+  <meta property="og:site_name" content="{{ site.name }}">
+  <meta property="og:title" content="{{ meta.title }}">
+  <meta property="og:description" content="{{ meta.description }}">
+  <meta property="og:url" content="{{ meta.canonical }}">
+  <meta property="og:image" content="{{ meta.og_image }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="{{ theme_color }}">
+  <meta name="htmx-config" content='{"includeIndicatorStyles": false, "allowEval": false, "historyCacheSize": 0}'>
+  <link rel="icon" href="{{ static_url('icons/favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ static_url('css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ static_url('css/base.css') }}">
+  <link rel="stylesheet" href="{{ static_url('css/components.css') }}">
+  {% block styles %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+{% include "partials/sprite.svg" %}
+<a class="skip-link" href="#main">Skip to content</a>
+{% from "components/nav.html" import nav %}
+{{ nav(nav_links, current_nav, brand_href=url_for('pages.home'), brand=site.short_name, handle=profile.handle, search_href=url_for('search.search')) }}
+<main id="main" class="container {% block main_class %}{% endblock %}" tabindex="-1">
+{% block content %}{% endblock %}
+</main>
+<footer class="footer container">
+  <div class="footer__inner">
+    <p class="footer__name"><strong>{{ profile.name }}</strong> <span class="muted">· {{ site.tagline }}</span></p>
+    <ul class="footer__links cluster">
+      {% for contact in profile.contacts %}
+      <li><a href="{{ contact.url or '#' }}"{% if contact.kind != 'email' %} rel="noopener noreferrer" target="_blank"{% endif %}>{{ contact.label }}</a></li>
+      {% endfor %}
+      <li><a href="https://github.com/Sann2267/portfolio" rel="noopener noreferrer" target="_blank">Site source</a></li>
+    </ul>
+    <p class="footer__note muted small">Every case states what is documented, verified in code, implemented but undocumented, targeted, or planned. Built with Flask and Jinja; content is YAML and Markdown.</p>
+  </div>
+</footer>
+{% block overlays %}{% endblock %}
+<script src="{{ static_url('js/vendor/htmx.min.js') }}" defer></script>
+<script src="{{ static_url('js/app.js') }}" defer></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

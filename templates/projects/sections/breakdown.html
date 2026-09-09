@@ -1,0 +1,8 @@
+<div class="breakdown">
+  {% for key in project.breakdown_sections %}
+  <section class="breakdown__part" id="breakdown-{{ key }}">
+    <h3 class="breakdown__title"><span class="eyebrow">{{ key|replace('_', ' ') }}</span></h3>
+    <div class="prose">{{ project.body.breakdown[key]|safe }}</div>
+  </section>
+  {% endfor %}
+</div>

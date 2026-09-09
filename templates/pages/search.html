@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow eyebrow--active">Investigation database</p>
+  <h1>Search</h1>
+  <p class="secondary measure">Cases by title, technology, AWS service, category, or architecture node. Results update as you type.</p>
+</header>
+<form class="search-form" method="get" action="{{ url_for('search.search') }}" role="search"
+      hx-get="{{ url_for('search.search') }}" hx-target="#search-results" hx-trigger="input changed delay:250ms from:#search-q, search from:#search-q" hx-push-url="true">
+  <label class="field">
+    <span>Query</span>
+    <input id="search-q" name="q" type="search" value="{{ query }}" placeholder="kubernetes, lambda, iot core, scraping…" autocomplete="off" autofocus>
+  </label>
+  <button class="btn btn--primary" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg> Search</button>
+</form>
+<div id="search-results" aria-live="polite">
+  {% include "partials/search_results.html" %}
+</div>
+{% endblock %}

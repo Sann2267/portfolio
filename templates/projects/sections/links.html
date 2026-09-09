@@ -1,0 +1,6 @@
+{% from "components/links.html" import link_or_state %}
+<div class="grid" data-grid-min="14rem">
+  {{ link_or_state(project.repository, "Source code") }}
+  {{ link_or_state(project.demo, "Live demo") }}
+  {{ link_or_state(project.documentation, "Documentation") }}
+</div>

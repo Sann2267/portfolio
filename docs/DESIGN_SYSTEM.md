@@ -14,7 +14,7 @@ colours or spacing.
 | `static/css/components.css` | One block per component macro. |
 | `static/css/room.css` | Home page composition (Phase 05). |
 | `static/css/case.css` | Case file layout and architecture diagram (Phases 06 and 07). |
-| `static/icons/sprite.svg` | Inline SVG symbols referenced with `<use href="#i-...">`. |
+| `templates/partials/sprite.svg` | Inline SVG symbols, included once per page and referenced with `<use href="#i-...">`. |
 | `templates/components/*.html` | Jinja macros. They take plain values (hrefs, labels) so they render outside Flask too. |
 
 ## Tokens

@@ -1,0 +1,17 @@
+{% from "components/case_file.html" import case_card %}
+<p class="muted small results__count">
+  {% if filters.active %}{{ projects|length }} of {{ total }} cases match{% else %}All {{ total }} cases{% endif %}
+  {% if filters.tech %} · technology <a href="{{ tech_href(filters.tech) }}">{{ filters.tech }}</a>{% endif %}
+</p>
+{% if projects %}
+<div class="grid" data-count="{{ projects|length }}">
+  {% for project in projects %}
+  {{ case_card(project, case_href(project.slug), category_label(project.category), tech_href=tech_href) }}
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty">
+  <p class="eyebrow">No case matches</p>
+  <p>No case matches those filters. <a href="{{ url_for('projects.index') }}">Clear the filters</a> or <a href="{{ url_for('search.search') }}">search</a> instead.</p>
+</div>
+{% endif %}
