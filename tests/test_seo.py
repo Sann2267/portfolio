@@ -95,7 +95,7 @@ def test_static_versions_follow_file_content(client):
     import hashlib
 
     html = client.get("/").get_data(as_text=True)
-    versions = dict(re.findall(r'/static/((?:css|js)/[a-z]+\.(?:css|js))\?v=([0-9a-f]+)', html))
+    versions = dict(re.findall(r"/static/((?:css|js)/[a-z]+\.(?:css|js))\?v=([0-9a-f]+)", html))
     assert len(versions) >= 6
     assert len(set(versions.values())) == len(versions)  # no two files share a version
     for name, version in versions.items():
