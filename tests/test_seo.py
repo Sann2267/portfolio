@@ -88,3 +88,16 @@ def test_static_assets_are_cacheable(client):
     response = client.get("/static/css/tokens.css?v=abc")
     assert response.status_code == 200
     assert "max-age=" in response.headers.get("Cache-Control", "")
+
+
+def test_static_versions_follow_file_content(client):
+    """Vercel gives every file the same mtime, so the version must come from the bytes."""
+    import hashlib
+
+    html = client.get("/").get_data(as_text=True)
+    versions = dict(re.findall(r'/static/((?:css|js)/[a-z]+\.(?:css|js))\?v=([0-9a-f]+)', html))
+    assert len(versions) >= 6
+    assert len(set(versions.values())) == len(versions)  # no two files share a version
+    for name, version in versions.items():
+        digest = hashlib.sha1((ROOT / "static" / name).read_bytes()).hexdigest()
+        assert version == digest[:10], name

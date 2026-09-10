@@ -450,7 +450,7 @@ Rules:
 - `base.css` (reset, typography, layout primitives), `components.css` (one block per macro),
   `room.css` (home composition and its breakpoints), `case.css` (case renderer and diagram),
   `scene.css` (the illustrated case room above the home page and its cutscene states).
-- Linked from `base.html` with a cache-busting query string derived from file mtime by a `static_url`
+- Linked from `base.html` with a cache-busting query string derived from a content hash by a `static_url`
   helper. No bundler, no preprocessor.
 - `prefers-reduced-motion` disables all non-essential animation in one media block.
 

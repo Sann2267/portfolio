@@ -154,7 +154,7 @@ evidence:
 ```
 
 The loader fails if the file is missing. Images are lazy-loaded and served with a
-cache-busting version query.
+cache-busting version query derived from a content hash.
 
 ---
 
