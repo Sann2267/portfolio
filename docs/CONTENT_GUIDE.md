@@ -216,6 +216,11 @@ Any other heading is an error, which keeps the case renderer deterministic.
 - `profile.yaml`: `name`, `handle`, `headline` (max 160), `focus`, `location`, `languages`,
   `specializations` (category id, label, description), `contacts` (kind, label, url or value,
   `primary`). The introduction lives in `intro.md`.
+- `profile.yaml` → `cutscene` (optional): the narration of the home-page intro, up to five
+  lines of at most 90 characters each. Lines may not contain digits; the closing line ("06
+  cases on file…") is generated from the registry so the count is never typed by hand. The
+  honesty rules apply: no metrics, clients, or certifications. Leave the field out to use the
+  built-in lines in `app/services/scene_service.py`.
 - `skills.yaml`: groups with skills that list taxonomy names. The registry computes which cases
   demonstrate each skill; a skill with no case fails the tests, which keeps the skills page
   evidence-based.

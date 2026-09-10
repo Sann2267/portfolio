@@ -18,6 +18,9 @@
 .room__monitor { grid-area: monitor; }
 .room__desk { grid-area: desk; }
 
+/* In-page targets (the scene's hotspots point here) land below the sticky nav. */
+.room [id] { scroll-margin-top: calc(var(--nav-height) + var(--space-4)); }
+
 @media (min-width: 48rem) {
   .room {
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);

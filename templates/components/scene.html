@@ -1,0 +1,37 @@
+{#- The case-room scene: an illustrated entrance with a skippable cutscene and clickable objects.
+    data = {captions: [str], hotspots: [{key, label, kind, href, icon, action}], status: str}
+    (built by app.services.scene_service.scene_model). The picture is decorative; the hotspots
+    are real links and one button laid over it. Without JavaScript the room renders lit, the
+    cutscene controls are hidden, and every hotspot still works as a link. -#}
+{% macro scene(data) %}
+<section class="scene" data-scene aria-labelledby="scene-title">
+  <h2 id="scene-title" class="sr-only">Case room</h2>
+  <div class="scene__stage">
+    {% include "partials/scene.svg" %}
+    <nav class="scene__hotspots" aria-label="Objects in the room">
+      {%- for spot in data.hotspots %}
+      {%- if spot.kind == 'toggle' %}
+      <button type="button" class="scene__hot scene__hot--{{ spot.key }}" data-scene-action="{{ spot.action }}" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#{{ spot.icon }}"/></svg><span class="scene__label">{{ spot.label }}</span></button>
+      {%- else %}
+      <a class="scene__hot scene__hot--{{ spot.key }}" href="{{ spot.href }}"{% if spot.kind == 'palette' %} data-palette-open{% endif %}><svg class="icon" aria-hidden="true"><use href="#{{ spot.icon }}"/></svg><span class="scene__label">{{ spot.label }}</span></a>
+      {%- endif %}
+      {%- endfor %}
+    </nav>
+  </div>
+  <div class="scene__bar">
+    <p class="scene__caption mono" data-scene-caption aria-hidden="true"></p>
+    <div class="scene__controls">
+      <button type="button" class="btn btn--sm" data-scene-action="skip">Skip intro <kbd>Esc</kbd></button>
+      <button type="button" class="btn btn--sm" data-scene-action="replay"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg>Replay intro</button>
+      <button type="button" class="btn btn--sm" data-scene-action="sound" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-sound"/></svg>Sound <span data-scene-sound-state>off</span></button>
+      <a class="btn btn--sm btn--ghost" href="#dossier-title">Enter the room <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    </div>
+    <p class="scene__status small muted" data-scene-status aria-live="polite">{{ data.status }}</p>
+  </div>
+  <ol class="sr-only" data-scene-script>
+    {%- for line in data.captions %}
+    <li>{{ line }}</li>
+    {%- endfor %}
+  </ol>
+</section>
+{% endmacro %}

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from app.models.common import ContentModel
 
@@ -41,6 +41,29 @@ class Profile(ContentModel):
     specializations: list[Specialization] = []
     contacts: list[Contact] = []
     intro: str | None = Field(default=None, description="HTML from intro.md, set by the loader")
+    cutscene: list[str] = Field(
+        default=[],
+        max_length=5,
+        description="opening narration of the home-page intro: 1-90 characters a line, no digits",
+    )
+
+    @field_validator("cutscene")
+    @classmethod
+    def _check_cutscene(cls, lines: list[str]) -> list[str]:
+        cleaned = []
+        for line in lines:
+            text = line.strip()
+            if not text:
+                raise ValueError("cutscene lines must not be empty")
+            if len(text) > 90:
+                raise ValueError(f"cutscene line is longer than 90 characters: {text[:40]}...")
+            if any(ch.isdigit() for ch in text):
+                raise ValueError(
+                    "cutscene lines carry no numbers; the case count is added from the "
+                    f"registry: {text}"
+                )
+            cleaned.append(text)
+        return cleaned
 
     @property
     def primary_contact(self) -> Contact | None:

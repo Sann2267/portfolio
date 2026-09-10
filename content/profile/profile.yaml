@@ -24,6 +24,12 @@ specializations:
   - category: iot
     label: IoT
     description: ESP32 sensors publishing over MQTT to AWS IoT Core, Node-RED dashboards
+# Opening narration of the home-page intro: up to five lines of 90 characters, no numbers
+# (the closing line with the case count is generated). Remove the field to use the defaults.
+cutscene:
+  - Night. Rain on the glass. Somewhere a pipeline is still running.
+  - This is the case room. Every project is a case; every architecture is evidence.
+  - Nothing on these walls claims more than the record supports.
 contacts:
   - {kind: email, label: Email, value: ibnuadzim2@gmail.com, url: "mailto:ibnuadzim2@gmail.com", primary: true}
   - {kind: github, label: GitHub, value: Sann2267, url: "https://github.com/Sann2267"}

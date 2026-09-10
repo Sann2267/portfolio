@@ -41,7 +41,9 @@ def test_tokens_define_the_required_custom_properties():
     assert not missing, missing
 
 
-@pytest.mark.parametrize("name", ["base.css", "components.css"])
+@pytest.mark.parametrize(
+    "name", ["base.css", "components.css", "room.css", "case.css", "scene.css"]
+)
 def test_no_raw_colours_outside_tokens(name):
     text = (CSS / name).read_text(encoding="utf-8")
     offenders = [line for line in text.splitlines() if RAW_COLOUR.search(line)]
@@ -55,7 +57,7 @@ def test_reduced_motion_is_supported():
 
 
 def test_templates_have_no_inline_styles_or_raw_colours():
-    for path in TEMPLATES.rglob("*.html"):
+    for path in [*TEMPLATES.rglob("*.html"), *TEMPLATES.rglob("*.svg")]:
         text = path.read_text(encoding="utf-8")
         assert 'style="' not in text, path
         assert not RAW_COLOUR.search(text), path

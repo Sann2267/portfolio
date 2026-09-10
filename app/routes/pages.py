@@ -16,6 +16,7 @@ from flask import (
 from app import get_registry
 from app.services.project_service import system_lines
 from app.services.relation_service import board_links
+from app.services.scene_service import scene_model
 from app.services.seo_service import build_meta
 
 bp = Blueprint("pages", __name__)
@@ -38,6 +39,7 @@ def home():
         categories=registry.taxonomy.categories,
         terminal=system_lines(registry),
         links=board_links(registry),
+        scene=scene_model(registry, url_for),
     )
 
 

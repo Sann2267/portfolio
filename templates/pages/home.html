@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% from "components/case_file.html" import case_card %}
 {% from "components/panels.html" import terminal_panel, metric_card %}
+{% from "components/scene.html" import scene as case_room_scene %}
 {% block body_class %}page-room{% endblock %}
-{% block styles %}<link rel="stylesheet" href="{{ static_url('css/room.css') }}">{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ static_url('css/room.css') }}">
+<link rel="stylesheet" href="{{ static_url('css/scene.css') }}">{% endblock %}
 {% block content %}
+{{ case_room_scene(scene) }}
 <div class="room">
   <section class="room__dossier panel panel--elevated reveal" aria-labelledby="dossier-title">
     <p class="eyebrow eyebrow--active">Investigator dossier</p>
@@ -41,7 +44,7 @@
     <p class="board__status mono small" data-board-status aria-live="polite"></p>
   </section>
 
-  <aside class="room__monitor" aria-labelledby="monitor-title">
+  <aside class="room__monitor" id="monitor" aria-labelledby="monitor-title">
     <p class="panel__title" id="monitor-title">System monitor</p>
     <div class="monitor">
       {% for category in categories if counts.get(category.id) %}
@@ -58,4 +61,6 @@
   </section>
 </div>
 {% endblock %}
-{% block scripts %}<script src="{{ static_url('js/room.js') }}" defer></script>{% endblock %}
+{% block scripts %}<script src="{{ static_url('js/room.js') }}" defer></script>
+<script src="{{ static_url('js/scene.js') }}" defer></script>
+<script src="{{ static_url('js/audio.js') }}" defer></script>{% endblock %}

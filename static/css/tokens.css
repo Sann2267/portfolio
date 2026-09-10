@@ -79,8 +79,28 @@
   --dur-base: 200ms;
   --dur-slow: 360ms;
   --dur-trace: 1200ms;
+  --dur-scene: 600ms;                   /* one cutscene step (lamp, folder, veil) */
+  --dur-camera: 1400ms;                 /* the pull-back at the end of the intro */
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---- scene illustration (templates/partials/scene.svg, painted by scene.css) ------- */
+  --scene-wall: #252221;
+  --scene-floor: #15120f;
+  --scene-wood: #5b3f29;
+  --scene-wood-dark: #3a2819;
+  --scene-metal: #3a3f47;
+  --scene-metal-light: #5b626c;
+  --scene-paper: #d8ceb6;
+  --scene-paper-dim: #9a917f;
+  --scene-cork: #6a4c31;
+  --scene-manila: #b3955f;
+  --scene-night: #1c2633;
+  --scene-night-deep: #0b0f15;
+  --scene-rain: #93a4ba;
+  --scene-screen: #173326;
+  --scene-glow: var(--color-accent-active);
+  --scene-veil: var(--color-background-deep);
 
   /* ---- layout --------------------------------------------------------------------- */
   --container: 84rem;

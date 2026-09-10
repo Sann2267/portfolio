@@ -79,7 +79,9 @@ def test_fake_project_renders_everywhere_without_template_changes(tmp_path):
     assert "Archived" in html and 'id="deployment"' not in html  # breakdown lives under one id
     assert "breakdown-deployment" in html
 
-    assert client.get("/").get_data(as_text=True).count('<article class="case-card') == 7
+    home = client.get("/").get_data(as_text=True)
+    assert home.count('<article class="case-card') == 7
+    assert "07 cases on file" in home  # the scene's closing line follows the registry
     assert 'data-slug="temp-fake-case"' in client.get("/projects?tech=docker").get_data(
         as_text=True
     )

@@ -1,0 +1,167 @@
+{#- The case room, drawn once and painted by static/css/scene.css. Decorative: the real
+    controls are the HTML hotspots laid over it. Every colour comes from an sc-* class and every
+    id starts with sc-, so the template colour scan never mistakes one for a hex value. -#}
+<svg class="scene__art" viewBox="0 0 1600 720" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <defs>
+    <clipPath id="sc-clip-glass"><rect x="100" y="80" width="280" height="280"/></clipPath>
+    <linearGradient id="sc-night" x1="0" y1="0" x2="0" y2="1"><stop class="sc-stop-night-a" offset="0"/><stop class="sc-stop-night-b" offset="1"/></linearGradient>
+    <radialGradient id="sc-lamp-glow"><stop class="sc-stop-glow" offset="0"/><stop class="sc-stop-out" offset="1"/></radialGradient>
+    <linearGradient id="sc-cone" x1="0" y1="0" x2="0" y2="1"><stop class="sc-stop-cone" offset="0"/><stop class="sc-stop-out" offset="1"/></linearGradient>
+    <radialGradient id="sc-lens"><stop class="sc-stop-lens-a" offset="0"/><stop class="sc-stop-lens-b" offset="1"/></radialGradient>
+    <linearGradient id="sc-screen" x1="0" y1="0" x2="0" y2="1"><stop class="sc-stop-screen-a" offset="0"/><stop class="sc-stop-screen-b" offset="1"/></linearGradient>
+    <radialGradient id="sc-screen-glow"><stop class="sc-stop-screen-glow" offset="0"/><stop class="sc-stop-out" offset="1"/></radialGradient>
+  </defs>
+
+  <g class="sc-bg">
+    <rect class="sc-wall" x="0" y="0" width="1600" height="560"/>
+    <rect class="sc-floor" x="0" y="560" width="1600" height="160"/>
+    <rect class="sc-base" x="0" y="546" width="1600" height="14"/>
+    <polygon class="sc-spill" points="120,560 360,560 420,700 60,700"/>
+  </g>
+
+  <g class="sc-window">
+    <rect class="sc-wood" x="90" y="70" width="300" height="300" rx="4"/>
+    <rect x="100" y="80" width="280" height="280" fill="url(#sc-night)"/>
+    <g clip-path="url(#sc-clip-glass)">
+      <g class="sc-rain-group">
+        {%- for x, y in [(112, 96), (138, 170), (160, 250), (186, 118), (205, 300), (228, 200), (252, 130), (275, 280), (298, 160), (322, 236), (345, 104), (368, 310)] %}
+        <line class="sc-rain" x1="{{ x }}" y1="{{ y }}" x2="{{ x - 5 }}" y2="{{ y + 52 }}"/>
+        <line class="sc-rain" x1="{{ x }}" y1="{{ y - 280 }}" x2="{{ x - 5 }}" y2="{{ y - 228 }}"/>
+        {%- endfor %}
+      </g>
+    </g>
+    <rect class="sc-wood-dark" x="236" y="80" width="8" height="280"/>
+    {%- for i in range(5) %}
+    <rect class="sc-metal" x="100" y="{{ 80 + i * 31 }}" width="280" height="10"/>
+    {%- endfor %}
+    <rect class="sc-wood" x="80" y="370" width="320" height="14" rx="2"/>
+  </g>
+
+  <g class="sc-cabinet">
+    <rect class="sc-metal" x="70" y="360" width="180" height="200" rx="4"/>
+    {%- for i in range(3) %}
+    <rect class="sc-metal-light" x="82" y="{{ 372 + i * 64 }}" width="156" height="56" rx="3"/>
+    <rect class="sc-paper-dim" x="96" y="{{ 380 + i * 64 }}" width="30" height="12"/>
+    <rect class="sc-metal" x="148" y="{{ 396 + i * 64 }}" width="24" height="6" rx="2"/>
+    {%- endfor %}
+  </g>
+
+  <g class="sc-rack">
+    <ellipse class="sc-wood-dark" cx="470" cy="560" rx="40" ry="8"/>
+    <rect class="sc-wood" x="465" y="250" width="10" height="310"/>
+    <path class="sc-wood-line" d="M470 262 L440 248 M470 262 L500 248"/>
+    <path class="sc-manila" d="M455 262 L430 300 L438 470 L505 470 L512 300 L487 262 Z"/>
+    <path class="sc-wood-line" d="M471 268 L471 466"/>
+    <rect class="sc-ink" x="425" y="222" width="40" height="26" rx="6"/>
+    <ellipse class="sc-ink" cx="445" cy="246" rx="34" ry="7"/>
+  </g>
+
+  <g class="sc-board">
+    <rect class="sc-wood" x="580" y="60" width="520" height="300" rx="6"/>
+    <rect class="sc-cork" x="594" y="74" width="492" height="272"/>
+    {%- for x, y, r in [(620, 110, -3), (720, 95, 2), (830, 120, -2), (940, 100, 3), (660, 220, 2), (890, 230, -3)] %}
+    <g transform="rotate({{ r }} {{ x + 35 }} {{ y + 25 }})">
+      <rect class="sc-paper" x="{{ x }}" y="{{ y }}" width="70" height="50"/>
+      <rect class="sc-paper-dim" x="{{ x + 8 }}" y="{{ y + 12 }}" width="54" height="5"/>
+      <rect class="sc-paper-dim" x="{{ x + 8 }}" y="{{ y + 22 }}" width="40" height="5"/>
+      <rect class="sc-paper-dim" x="{{ x + 8 }}" y="{{ y + 32 }}" width="48" height="5"/>
+    </g>
+    <circle class="sc-pin" cx="{{ x + 35 }}" cy="{{ y + 5 }}" r="4"/>
+    {%- endfor %}
+    <path class="sc-string" d="M655 115 L755 100 L865 125 L975 105 M655 115 L695 225 M865 125 L925 235"/>
+  </g>
+
+  <g class="sc-desk">
+    <rect class="sc-wood-dark" x="580" y="488" width="760" height="110"/>
+    <rect class="sc-wood-dark" x="590" y="598" width="24" height="60"/>
+    <rect class="sc-wood-dark" x="1306" y="598" width="24" height="60"/>
+    <rect class="sc-wood" x="560" y="468" width="800" height="20" rx="3"/>
+    <rect class="sc-wood-line" x="640" y="504" width="160" height="40" rx="3"/>
+    <rect class="sc-metal" x="708" y="522" width="24" height="5" rx="2"/>
+  </g>
+  <g class="sc-side-table">
+    <rect class="sc-wood-dark" x="1400" y="472" width="12" height="90"/>
+    <rect class="sc-wood-dark" x="1538" y="472" width="12" height="90"/>
+    <rect class="sc-wood" x="1390" y="458" width="170" height="14" rx="3"/>
+  </g>
+
+  <g class="sc-phone">
+    <path class="sc-ink" d="M605 470 L615 425 Q620 415 630 415 L670 415 Q680 415 685 425 L695 470 Z"/>
+    <circle class="sc-metal-light" cx="650" cy="448" r="16"/>
+    <circle class="sc-ink" cx="650" cy="448" r="6"/>
+    <rect class="sc-ink" x="630" y="410" width="40" height="8" rx="3"/>
+    <path class="sc-ink-line" d="M598 420 Q650 392 702 420"/>
+  </g>
+
+  <g class="sc-folder">
+    <rect class="sc-manila" x="745" y="412" width="130" height="62" rx="3"/>
+    <rect class="sc-paper" x="762" y="406" width="110" height="66"/>
+    <rect class="sc-paper-dim" x="774" y="420" width="70" height="5"/>
+    <rect class="sc-paper-dim" x="774" y="432" width="86" height="5"/>
+    <rect class="sc-manila-light" x="752" y="418" width="130" height="62" rx="3" transform="rotate(-3 817 449)"/>
+    <rect class="sc-manila" x="745" y="404" width="40" height="10" rx="2"/>
+    <g class="sc-stamp">
+      <rect class="sc-stamp-box" x="790" y="430" width="60" height="22" rx="3" transform="rotate(-6 820 441)"/>
+      <rect class="sc-stamp-bar" x="800" y="438" width="40" height="6" transform="rotate(-6 820 441)"/>
+    </g>
+  </g>
+
+  <g class="sc-glass">
+    <line class="sc-ink-line" x1="948" y1="460" x2="985" y2="492"/>
+    <circle class="sc-glass-lens" cx="925" cy="437" r="32" fill="url(#sc-lens)"/>
+    <path class="sc-shine" d="M908 424 Q918 412 934 414"/>
+  </g>
+
+  <g class="sc-typewriter">
+    <rect class="sc-paper" x="1060" y="336" width="64" height="60"/>
+    <rect class="sc-paper-dim" x="1068" y="346" width="44" height="4"/>
+    <rect class="sc-paper-dim" x="1068" y="356" width="36" height="4"/>
+    <rect class="sc-paper-dim" x="1068" y="366" width="48" height="4"/>
+    <rect class="sc-metal" x="1030" y="388" width="120" height="20" rx="4"/>
+    <circle class="sc-metal-light" cx="1026" cy="398" r="6"/>
+    <circle class="sc-metal-light" cx="1154" cy="398" r="6"/>
+    <rect class="sc-ink" x="1010" y="405" width="160" height="62" rx="8"/>
+    {%- for i in range(3) %}
+    <rect class="sc-metal-light" x="{{ 1025 + i * 6 }}" y="{{ 420 + i * 14 }}" width="{{ 130 - i * 12 }}" height="8" rx="4"/>
+    {%- endfor %}
+  </g>
+
+  <g class="sc-lamp">
+    <ellipse class="sc-ink" cx="1270" cy="468" rx="34" ry="8"/>
+    <path class="sc-ink-line" d="M1270 466 L1262 380 L1228 340"/>
+    <circle class="sc-bulb" cx="1226" cy="356" r="10"/>
+    <polygon class="sc-shade" points="1178,300 1262,300 1290,352 1164,352"/>
+  </g>
+
+  <g class="sc-monitor">
+    <rect class="sc-metal" x="1460" y="442" width="30" height="14"/>
+    <rect class="sc-metal-light" x="1405" y="322" width="140" height="120" rx="10"/>
+    <rect x="1420" y="336" width="110" height="84" rx="4" fill="url(#sc-screen)"/>
+    <g class="sc-screen-lines">
+      {%- for width in [70, 52, 84, 40] %}
+      <rect class="sc-screen-line" x="1430" y="{{ 346 + loop.index0 * 12 }}" width="{{ width }}" height="4"/>
+      {%- endfor %}
+      <rect class="sc-cursor" x="1430" y="396" width="8" height="5"/>
+    </g>
+    <circle class="sc-led" cx="1535" cy="436" r="3"/>
+  </g>
+
+  <g class="sc-light">
+    <polygon class="sc-cone-shape" points="1170,352 1290,352 1380,480 1040,480" fill="url(#sc-cone)"/>
+    <ellipse class="sc-halo" cx="1215" cy="440" rx="300" ry="150" fill="url(#sc-lamp-glow)"/>
+    <ellipse class="sc-screen-glow" cx="1475" cy="380" rx="110" ry="80" fill="url(#sc-screen-glow)"/>
+  </g>
+  <rect class="sc-veil" x="0" y="0" width="1600" height="720"/>
+
+  <g class="sc-hl">
+    <rect class="sc-hl__box sc-hl--cabinet" x="50" y="350" width="220" height="210" rx="10"/>
+    <rect class="sc-hl__box sc-hl--rack" x="400" y="210" width="140" height="350" rx="10"/>
+    <rect class="sc-hl__box sc-hl--board" x="570" y="50" width="540" height="285" rx="10"/>
+    <rect class="sc-hl__box sc-hl--phone" x="580" y="385" width="140" height="90" rx="10"/>
+    <rect class="sc-hl__box sc-hl--folder" x="735" y="400" width="150" height="80" rx="10"/>
+    <rect class="sc-hl__box sc-hl--glass" x="895" y="395" width="95" height="95" rx="10"/>
+    <rect class="sc-hl__box sc-hl--typewriter" x="1000" y="340" width="180" height="135" rx="10"/>
+    <rect class="sc-hl__box sc-hl--lamp" x="1185" y="285" width="150" height="195" rx="10"/>
+    <rect class="sc-hl__box sc-hl--monitor" x="1390" y="310" width="170" height="160" rx="10"/>
+  </g>
+</svg>

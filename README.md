@@ -12,7 +12,7 @@ UI shows it.
 
 | | |
 |---|---|
-| Stack | Python 3.12 · Flask 3 · Jinja2 · pydantic v2 · PyYAML · Markdown · HTMX 2 (vendored) · plain CSS · three small vanilla JS modules |
+| Stack | Python 3.12 · Flask 3 · Jinja2 · pydantic v2 · PyYAML · Markdown · HTMX 2 (vendored) · plain CSS · five small vanilla JS modules |
 | No | TypeScript, React, Next.js, Node build steps, databases, webfonts, trackers |
 | Source | https://github.com/Sann2267/portfolio |
 | Docs | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md) · [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) |
@@ -64,13 +64,15 @@ app/
                            search.py (full page and fragments for htmx and the command palette)
   services/                project_service (filters, sections), search_service (index),
                            relation_service (related cases, technology views),
-                           diagram_service (deterministic SVG layout), seo_service (metadata)
+                           diagram_service (deterministic SVG layout), seo_service (metadata),
+                           scene_service (home-page cutscene script and clickable objects)
   models/                  pydantic content models (Project, Architecture, Profile, Skills, Taxonomy…)
   content/                 loader, registry, Markdown rendering, `python -m app.content` validator
 templates/
   base.html · pages/ · projects/ (index, detail, sections/) · components/ (macros) · partials/ · errors/
+  partials/scene.svg       the illustrated case room (inline SVG, coloured only through CSS classes)
 static/
-  css/ (tokens, base, components, room, case) · js/ (app, room, diagram, palette, vendor/htmx)
+  css/ (tokens, base, components, room, case, scene) · js/ (app, room, scene, audio, diagram, palette, vendor/htmx)
   images/ · icons/
 content/
   taxonomy.yaml · profile/ · skills/ · timeline/ · projects/<slug>/project.yaml + case.md
@@ -81,6 +83,16 @@ docs/                      ARCHITECTURE.md · CONTENT_GUIDE.md · DESIGN_SYSTEM.
 
 Request flow: route → service → content registry (loaded once, validated with pydantic) →
 Jinja template. The same route returns a full page or an HTML fragment when htmx asks.
+
+**Home page intro.** The room opens on an illustrated case room with a short, skippable cutscene
+(Skip button, Esc, or Enter) and clickable objects: the filing cabinet leads to Skills, the hat to
+the dossier, the corkboard to the investigation board, the telephone to Contact, the case folder
+to the case files, the magnifying glass to search, the typewriter to the timeline, the lamp shows
+every object's label, the monitor jumps to the system status. The intro plays once per browser
+tab (`sessionStorage["caseroom.introSeen"]`), never under `prefers-reduced-motion`, and can be
+replayed. Sound effects are synthesised in the browser, off by default, and remembered in
+`localStorage["caseroom.sound"]`. The narration lines live in `content/profile/profile.yaml`
+(`cutscene`). Without JavaScript the room renders lit and every object is a plain link.
 
 ---
 
@@ -161,8 +173,10 @@ page, htmx fragments, the room composition, the single case renderer (sections o
 empty, cross-links), the diagram layout, search and filters, the command palette markup,
 accessibility structure of every page (one `h1`, labelled controls, named links and buttons,
 skip link, alt text), SEO metadata, sitemap and robots, the asset budget, production
-configuration, a secret scan, and an end-to-end fake-project test that adds a seventh case
-in a temporary directory and renders it without touching any template.
+configuration, a secret scan, the case-room scene (nine hotspots with real targets, narration
+that obeys the honesty rules, a decorative drawing coloured only through classes, scripts that
+load no media), and an end-to-end fake-project test that adds a seventh case in a temporary
+directory and renders it without touching any template.
 
 GitHub Actions runs the same checks on every push (`.github/workflows/ci.yml`).
 

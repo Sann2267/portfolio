@@ -9,6 +9,7 @@ from pydantic import ValidationError
 
 from app.models import Architecture, Claim, Link, Period, Project, Taxonomy, TimelineEvent
 from app.models.common import coerce_claims
+from app.models.profile import Profile
 
 BASE_PROJECT = {
     "id": "case-007",
@@ -134,6 +135,27 @@ class TestProject:
         assert project.evidence_level["repository"] is True
         assert project.evidence_level["live_demo"] is False
         assert project.to_summary()["slug"] == "sample-case"
+
+
+class TestProfile:
+    def test_cutscene_defaults_empty(self):
+        assert Profile(name="X", headline="Y").cutscene == []
+
+    def test_cutscene_lines_are_stripped(self):
+        profile = Profile(name="X", headline="Y", cutscene=["  Night. Rain.  "])
+        assert profile.cutscene == ["Night. Rain."]
+
+    def test_cutscene_rejects_numbers_blank_and_long_lines(self):
+        with pytest.raises(ValidationError, match="no numbers"):
+            Profile(name="X", headline="Y", cutscene=["99 cases solved"])
+        with pytest.raises(ValidationError, match="empty"):
+            Profile(name="X", headline="Y", cutscene=["   "])
+        with pytest.raises(ValidationError, match="90 characters"):
+            Profile(name="X", headline="Y", cutscene=["x" * 91])
+
+    def test_more_than_five_lines_rejected(self):
+        with pytest.raises(ValidationError):
+            Profile(name="X", headline="Y", cutscene=["a"] * 6)
 
 
 class TestTaxonomy:

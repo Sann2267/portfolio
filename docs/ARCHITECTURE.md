@@ -448,15 +448,16 @@ Rules:
   surface-elevated, border, text-primary/secondary/muted, accent-active (amber), accent-success (green),
   accent-warning, accent-danger (red), shadow, radius, spacing scale, type scale, motion durations).
 - `base.css` (reset, typography, layout primitives), `components.css` (one block per macro),
-  `room.css` (home composition and its breakpoints), `case.css` (case renderer and diagram).
+  `room.css` (home composition and its breakpoints), `case.css` (case renderer and diagram),
+  `scene.css` (the illustrated case room above the home page and its cutscene states).
 - Linked from `base.html` with a cache-busting query string derived from file mtime by a `static_url`
   helper. No bundler, no preprocessor.
 - `prefers-reduced-motion` disables all non-essential animation in one media block.
 
 ### JavaScript
 
-Policy: the page must be complete without it. Three modules, each under a few hundred lines, loaded with
-`defer`:
+Policy: the page must be complete without it. Five small modules, each under a few hundred lines, loaded
+with `defer`:
 
 | Module | Purpose | Without it |
 |---|---|---|
@@ -464,6 +465,11 @@ Policy: the page must be complete without it. Three modules, each under a few hu
 | `room.js` | hover/focus highlighting of related cases and technologies on the board | cards are plain links |
 | `diagram.js` | node focus, dimming unrelated nodes, keyboard navigation inside the SVG | static SVG with `<title>` tooltips remains readable |
 | `palette.js` | `Ctrl+K` command palette over the same search endpoint | nav and `/search` page |
+| `scene.js` | the home page cutscene (`data-step` timeline), typed subtitles, skip/replay, the lamp's label toggle, `sessionStorage` "seen" flag | the room renders lit; every object is a plain link; cutscene controls are hidden |
+| `audio.js` | optional sound effects synthesised with the Web Audio API, off by default, `localStorage` flag | silence; the speaker button is hidden |
+
+The scene and its sounds are coupled only through a DOM event (`caseroom:sfx`), so either file
+can be removed without touching the other.
 
 HTMX is vendored and version-pinned so development works offline and the Content-Security-Policy can stay
 `script-src 'self'`.
@@ -651,6 +657,12 @@ with a copy-paste template for a new case.
 | 2026-09-09 | `case.md` is split on `## ` headings into a fixed set of sections; unknown headings are errors | Keeps the single case renderer deterministic |
 | 2026-09-09 | Skills list taxonomy names only; cases per skill are derived by the registry and a skill without a case fails the tests | Evidence-based skills page, no self-rated levels |
 | 2026-09-09 | Cases 003 and 004 credit infrastructure and orchestration work; workflow definitions, Lambda code, ETL scripts, and dashboards were provided by the modules | Module text states the assets were provided |
+| 2026-09-10 | Home page opens on an illustrated case room with a skippable cutscene and clickable objects; the existing dossier, board, monitor, and terminal stay below it unchanged | User wanted a short game-like entrance; the spec forbids hiding projects behind a puzzle |
+| 2026-09-10 | The room is an inline SVG drawn in code and coloured only through CSS classes and tokens; no 3D engine, no image assets | Spec performance rules; no assets to source; the template colour scan keeps enforcing tokens |
+| 2026-09-10 | Cutscene as a CSS state machine on `data-step`, driven by a JavaScript timer table | Skip, replay, reduced motion, and no-JS states fall out of one attribute; every frame is reproducible in tests and screenshots |
+| 2026-09-10 | Sound effects synthesised with the Web Audio API, off by default | No audio files, no `media-src`, no autoplay; the visitor opts in |
+| 2026-09-10 | Intro shown once per tab via `sessionStorage`; sound choice in `localStorage`; no cookies | Returning visitors and recruiters get the room at once |
+| 2026-09-10 | Profile gains an optional `cutscene` list (≤ 5 lines, ≤ 90 characters, no digits); the closing line with the case count is generated | Narration is content, but numbers come only from the registry |
 
 ---
 
@@ -668,6 +680,7 @@ with a copy-paste template for a new case.
 | 08 Search, filter, navigation | Command palette with live results, quick filters, AWS umbrella filter | Navigation tests; palette screenshot |
 | 09 Responsive, accessibility, performance | Collapsible sections, sitemap, robots, OG image, a11y and SEO tests | Sweep of 17 routes × 3 viewports with zero overflow; focus order; reduced motion |
 | 10 Verification and release | README, Dockerfile, CI workflow, env example, release tests, spec files moved to `docs/build/` | Full suite, production boot, secret scan, fake-project end-to-end test |
+| 11 Case-room scene (post-release) | Inline SVG room, `scene(data)` macro, `scene_service`, `scene.css`, `scene.js`, `audio.js`, ten sprite icons, `Profile.cutscene` | Scene tests (hotspots, narration honesty, decorative art, budgets); screenshot frames of every step at three widths; reduced-motion and no-JS runs |
 
 Deviations from the Phase 01 plan, all recorded in the decision log: technology URLs use slugs;
 `wsgi.py` remains the single entry point; the screenshot sweep is a Node tool kept outside the

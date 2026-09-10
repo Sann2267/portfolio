@@ -1,0 +1,355 @@
+/* Case-room scene: the illustrated entrance above the room, its hotspots, and the cutscene.
+   The picture (templates/partials/scene.svg) is painted only through the sc-* classes below.
+   The cutscene is a state machine on data-step (0-4, done) set by scene.js; every visual of a
+   step lives here. Without the attribute (no JavaScript) the room renders lit and the hotspots
+   are plain links. No delayed keyframes anywhere: reduced motion collapses durations only. */
+
+.scene { margin-block: var(--space-5) var(--space-2); }
+
+/* ---- stage: a 20:9 box whose height never pushes the dossier below the fold ----------- */
+
+.scene__stage {
+  position: relative;
+  width: min(100%, calc((100vh - 14rem) * 1600 / 720));
+  aspect-ratio: 1600 / 720;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--scene-night-deep);
+  box-shadow: var(--shadow-md);
+}
+
+.scene__art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 62% 58%;
+  transition: transform var(--dur-camera) var(--ease-out);
+}
+
+/* ---- hotspots: real links and one button laid over the objects -------------------------- */
+
+.scene__hotspots { position: absolute; inset: 0; margin: 0; }
+
+.scene__hot {
+  position: absolute;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+
+.scene__hot .icon { display: none; }
+
+/* boxes from the viewBox (1600 x 720): left = x / 16, top = y / 7.2 */
+.scene__hot--cabinet { left: 3.125%; top: 48.611%; width: 13.75%; height: 29.167%; }
+.scene__hot--rack { left: 25%; top: 29.167%; width: 8.75%; height: 48.611%; }
+.scene__hot--board { left: 35.625%; top: 6.944%; width: 33.75%; height: 39.583%; }
+.scene__hot--phone { left: 36.25%; top: 53.472%; width: 8.75%; height: 12.5%; }
+.scene__hot--folder { left: 45.938%; top: 55.556%; width: 9.375%; height: 11.111%; }
+.scene__hot--glass { left: 55.938%; top: 54.861%; width: 5.938%; height: 13.194%; }
+.scene__hot--typewriter { left: 62.5%; top: 47.222%; width: 11.25%; height: 18.75%; }
+.scene__hot--lamp { left: 74.063%; top: 39.583%; width: 9.375%; height: 27.083%; }
+.scene__hot--monitor { left: 86.875%; top: 43.056%; width: 10.625%; height: 22.222%; }
+
+.scene__label {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-1);
+  transform: translate(-50%, 0);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--line-active);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-background) 88%, transparent);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+
+/* neighbours on the desk alternate above and below so every label can show at once */
+.scene__hot--folder .scene__label,
+.scene__hot--typewriter .scene__label,
+.scene__hot--monitor .scene__label { top: var(--space-1); bottom: auto; }
+
+.scene__label { font-size: clamp(0.625rem, 0.85vw, var(--text-xs)); }
+
+.scene__hot:hover .scene__label,
+.scene__hot:focus-visible .scene__label,
+.scene[data-labels="on"] .scene__label { opacity: 1; }
+
+@media (hover: none) {
+  .scene__label { opacity: 1; }
+}
+
+/* the amber outline inside the picture follows the hovered or focused hotspot: no script */
+.sc-hl__box {
+  fill: var(--tint-active);
+  stroke: var(--color-accent-active);
+  stroke-width: 3;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+
+.scene[data-labels="on"] .sc-hl__box { opacity: 0.55; }
+
+.scene:has(.scene__hot--cabinet:hover, .scene__hot--cabinet:focus-visible) .sc-hl--cabinet,
+.scene:has(.scene__hot--rack:hover, .scene__hot--rack:focus-visible) .sc-hl--rack,
+.scene:has(.scene__hot--board:hover, .scene__hot--board:focus-visible) .sc-hl--board,
+.scene:has(.scene__hot--phone:hover, .scene__hot--phone:focus-visible) .sc-hl--phone,
+.scene:has(.scene__hot--folder:hover, .scene__hot--folder:focus-visible) .sc-hl--folder,
+.scene:has(.scene__hot--glass:hover, .scene__hot--glass:focus-visible) .sc-hl--glass,
+.scene:has(.scene__hot--typewriter:hover, .scene__hot--typewriter:focus-visible) .sc-hl--typewriter,
+.scene:has(.scene__hot--lamp:hover, .scene__hot--lamp:focus-visible) .sc-hl--lamp,
+.scene:has(.scene__hot--monitor:hover, .scene__hot--monitor:focus-visible) .sc-hl--monitor { opacity: 1; }
+
+/* ---- paint: every colour of the drawing ------------------------------------------------ */
+
+.sc-wall { fill: var(--scene-wall); }
+.sc-floor { fill: var(--scene-floor); }
+.sc-base { fill: var(--scene-wood-dark); }
+.sc-spill { fill: var(--scene-rain); opacity: 0.08; }
+.sc-wood { fill: var(--scene-wood); }
+.sc-wood-dark { fill: var(--scene-wood-dark); }
+.sc-wood-line { fill: none; stroke: var(--scene-wood-dark); stroke-width: 4; stroke-linecap: round; }
+.sc-metal { fill: var(--scene-metal); }
+.sc-metal-light { fill: var(--scene-metal-light); }
+.sc-ink { fill: var(--scene-night-deep); }
+.sc-ink-line { fill: none; stroke: var(--scene-night-deep); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+.sc-paper { fill: var(--scene-paper); }
+.sc-paper-dim { fill: var(--scene-paper-dim); }
+.sc-cork { fill: var(--scene-cork); }
+.sc-manila { fill: var(--scene-manila); }
+.sc-manila-light { fill: color-mix(in srgb, var(--scene-manila) 80%, var(--scene-paper)); }
+.sc-pin { fill: var(--color-accent-danger); }
+.sc-rain { stroke: var(--scene-rain); stroke-width: 2; stroke-linecap: round; opacity: 0.35; }
+.sc-glass-lens { stroke: var(--scene-metal-light); stroke-width: 6; }
+.sc-shine { fill: none; stroke: var(--scene-paper); stroke-width: 3; stroke-linecap: round; opacity: 0.6; }
+.sc-shade { fill: var(--scene-metal); }
+.sc-bulb { fill: var(--scene-glow); }
+.sc-stamp-box { fill: none; stroke: var(--color-accent-danger); stroke-width: 3; }
+.sc-stamp-bar { fill: var(--color-accent-danger); opacity: 0.8; }
+.sc-screen-line { fill: var(--color-accent-success); opacity: 0.45; }
+.sc-cursor { fill: var(--color-accent-success); }
+.sc-led { fill: var(--color-accent-success); }
+.sc-veil { fill: var(--scene-veil); pointer-events: none; }
+
+.sc-stop-night-a { stop-color: var(--scene-night); }
+.sc-stop-night-b { stop-color: var(--scene-night-deep); }
+.sc-stop-glow { stop-color: var(--scene-glow); stop-opacity: 0.35; }
+.sc-stop-cone { stop-color: var(--scene-glow); stop-opacity: 0.3; }
+.sc-stop-out { stop-color: var(--scene-glow); stop-opacity: 0; }
+.sc-stop-lens-a { stop-color: var(--scene-rain); stop-opacity: 0.3; }
+.sc-stop-lens-b { stop-color: var(--scene-rain); stop-opacity: 0.06; }
+.sc-stop-screen-a { stop-color: var(--scene-screen); }
+.sc-stop-screen-b { stop-color: var(--scene-night-deep); }
+.sc-stop-screen-glow { stop-color: var(--color-accent-success); stop-opacity: 0.18; }
+
+/* ---- the parts that move: rest state here, pre-states per step below -------------------- */
+
+.sc-veil,
+.sc-bulb,
+.sc-cone-shape,
+.sc-halo,
+.sc-screen-glow,
+.sc-screen-lines,
+.sc-rain-group { transition: opacity var(--dur-scene) var(--ease); }
+
+.sc-veil,
+.sc-rain-group { opacity: 0; }
+
+.sc-folder { transition: transform var(--dur-scene) var(--ease-out), opacity var(--dur-scene) var(--ease); }
+
+.sc-stamp {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease);
+}
+
+.sc-string {
+  fill: none;
+  stroke: var(--color-accent-active);
+  stroke-width: 2;
+  stroke-dasharray: 700;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--dur-trace) var(--ease-out);
+}
+
+/* step 0: night, rain, the camera close on the desk */
+.scene[data-step="0"] .sc-veil { opacity: 0.82; }
+.scene[data-step="0"] .sc-bulb,
+.scene[data-step="0"] .sc-cone-shape,
+.scene[data-step="0"] .sc-halo { opacity: 0; }
+
+/* steps 1-3: the lamp is on, the room is still in half-light */
+.scene:is([data-step="1"], [data-step="2"], [data-step="3"]) .sc-veil { opacity: 0.25; }
+
+/* steps 0-3: camera close, strings not yet traced, screen asleep */
+.scene:is([data-step="0"], [data-step="1"], [data-step="2"], [data-step="3"]) .scene__art { transform: scale(1.3); }
+.scene:is([data-step="0"], [data-step="1"], [data-step="2"], [data-step="3"]) .sc-string { stroke-dashoffset: 700; }
+.scene:is([data-step="0"], [data-step="1"], [data-step="2"], [data-step="3"]) .sc-screen-glow,
+.scene:is([data-step="0"], [data-step="1"], [data-step="2"], [data-step="3"]) .sc-screen-lines { opacity: 0; }
+
+/* the folder arrives in step 2, the stamp in step 3 */
+.scene:is([data-step="0"], [data-step="1"]) .sc-folder { transform: translateX(60px); opacity: 0; }
+.scene:is([data-step="0"], [data-step="1"], [data-step="2"]) .sc-stamp { transform: scale(1.6); opacity: 0; }
+
+/* rain only falls while the intro runs */
+.scene:is([data-step="0"], [data-step="1"], [data-step="2"], [data-step="3"], [data-step="4"]) .sc-rain-group {
+  opacity: 1;
+  animation: sc-rain 1.1s linear infinite;
+}
+
+/* step 4: the screen wakes and its cursor blinks three times, then rests */
+.scene[data-step="4"] .sc-cursor { animation: sc-blink 1s steps(1) 3; }
+
+/* hotspots appear when the intro is over (hidden, so they are out of the tab order until then);
+   on pointer devices their labels flash once as a hint */
+.scene[data-step]:not([data-step="done"]) .scene__hot { opacity: 0; visibility: hidden; pointer-events: none; }
+
+@media (min-width: 48rem) and (hover: hover) {
+  .scene--pulse .scene__label { animation: sc-label-pulse 1.4s var(--ease) 1; }
+}
+
+/* skipping: jump to the rest state without playing the transitions */
+.scene--instant *,
+.scene--instant *::before,
+.scene--instant *::after {
+  transition-duration: 0s !important;
+  animation-duration: 0s !important;
+}
+
+/* replay under reduced motion: a still slideshow */
+.scene--still .scene__art { transform: none !important; }
+.scene--still .sc-rain-group { animation: none !important; }
+
+@keyframes sc-rain { to { transform: translateY(280px); } }
+@keyframes sc-blink { 50% { opacity: 0; } }
+@keyframes sc-label-pulse {
+  0%, 100% { opacity: 0; }
+  30%, 70% { opacity: 1; }
+}
+
+/* ---- bar: typed subtitles, controls, status ------------------------------------------- */
+
+.scene__bar {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-1) 0;
+}
+
+.scene__caption {
+  margin: 0;
+  min-height: 2.8em;
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+}
+
+.scene__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.scene__status { margin: 0; min-height: 1.5em; }
+
+.scene:not([data-step]) [data-scene-action="skip"],
+.scene[data-step="done"] [data-scene-action="skip"] { display: none; }
+.scene[data-step]:not([data-step="done"]) [data-scene-action="replay"] { display: none; }
+
+/* without JavaScript the cutscene controls and the lamp toggle have nothing to do */
+html:not(.js) [data-scene-action],
+html:not(.js) .scene__hot--lamp { display: none; }
+
+/* ---- small screens: the picture is a banner, the objects become a row of chips ---------- */
+
+@media (max-width: 47.99rem) {
+  .scene__stage {
+    width: 100%;
+    aspect-ratio: auto;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .scene__art {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    height: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--scene-night-deep);
+    transform: none !important;
+  }
+
+  .scene__hotspots {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  .scene__hot {
+    position: static;
+    inset: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: auto;
+    height: auto;
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+
+  .scene__hot .icon { display: inline-block; }
+  .scene__hot--lamp { display: none; } /* labels are always visible here */
+
+  .scene__label {
+    position: static;
+    transform: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-sans);
+    font-size: inherit;
+    letter-spacing: normal;
+    text-transform: none;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .scene__caption { min-height: 3.4em; }
+}
+
+/* ---- reduced motion: no camera, no rain, everything in place --------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .scene__art { transform: none !important; }
+  .sc-rain-group { animation: none !important; }
+  .scene__hot { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+}
