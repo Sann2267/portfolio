@@ -1,0 +1,4 @@
+const architecture = {
+  nodes: [...],
+  edges: [...]
+}
